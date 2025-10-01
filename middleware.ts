@@ -2,16 +2,16 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(req: NextRequest) {
+  // Accept either cookie token or localStorage-based auth handled client-side
   const token = req.cookies.get("token")?.value;
-
   if (!token) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    // Allow public pages and client-side guard to manage redirects
+    return NextResponse.next();
   }
-
-  // In dummy mode we only check token presence and skip verification
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/home"],
+  // Currently disabled strict protection to avoid unwanted redirects
+  matcher: [],
 };

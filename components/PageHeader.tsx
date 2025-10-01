@@ -8,12 +8,23 @@ export function PageHeader() {
   const IconComponent = tabInfo.icon
 
   return (
-    <div className="mb-6">
-      <div className="flex items-center gap-3 mb-2">
-        <IconComponent className="h-8 w-8 text-[#98E165]" />
-        <h1 className="text-3xl font-bold font-poppins">{tabInfo.title}</h1>
+    <div className="mb-8 fade-in">
+      <div className="flex items-center gap-4 mb-3">
+        <div 
+          className="p-3 rounded-xl"
+          style={{ backgroundColor: 'rgba(20, 184, 166, 0.1)' }}
+        >
+          <IconComponent className="h-8 w-8" style={{ color: 'var(--primary-teal)' }} />
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
+            {tabInfo.title}
+          </h1>
+          <p className="text-lg mt-1" style={{ color: 'var(--text-secondary)' }}>
+            {tabInfo.description}
+          </p>
+        </div>
       </div>
-      <p className="text-gray-600 font-inter text-lg">{tabInfo.description}</p>
     </div>
   )
 }

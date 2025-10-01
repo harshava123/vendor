@@ -376,75 +376,75 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen px-4 sm:px-6 lg:px-8" style={{ backgroundColor: 'var(--light-gray)', color: 'var(--text-primary)' }}>
       {/* Welcome Heading */}
       <div className="py-4 sm:py-6">
-        <h1 className="text-xl sm:text-2xl font-semibold font-poppins italic text-gray-900">
+        <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold font-poppins italic" style={{ color: 'var(--text-primary)' }}>
           Hi Admin, Welcome to your Dashboard
         </h1>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
-        <Card className="bg-white rounded-xl border border-gray-200 p-2 font-inter shadow-none">
+        <Card className="rounded-xl p-2 font-inter shadow-none" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-light)' }}>
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
               <div>
-                <h2 className="text-3xl font-bold mb-2 text-gray-900">{categories.length}</h2>
-                <p className="text-gray-600 font-poppins">Total Categories</p>
+                <h2 className="text-3xl font-bold mb-2">{categories.length}</h2>
+                <p className="font-poppins" style={{ color: 'var(--text-secondary)' }}>Total Categories</p>
               </div>
-              <Package className="h-8 w-8 text-gray-400" />
+              <Package className="h-8 w-8" style={{ color: 'var(--text-secondary)' }} />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white rounded-xl border border-gray-200 p-2 font-inter shadow-none">
+        <Card className="rounded-xl p-2 font-inter shadow-none" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-light)' }}>
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
               <div>
-                <h2 className="text-3xl font-bold mb-2 text-gray-900">{categories.filter(c => c.is_active).length}</h2>
-                <p className="text-gray-600 font-poppins">Active Categories</p>
+                <h2 className="text-3xl font-bold mb-2">{categories.filter(c => c.is_active).length}</h2>
+                <p className="font-poppins" style={{ color: 'var(--text-secondary)' }}>Active Categories</p>
               </div>
-              <TrendingUp className="h-8 w-8 text-gray-400" />
+              <TrendingUp className="h-8 w-8" style={{ color: 'var(--text-secondary)' }} />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white rounded-xl border border-gray-200 p-2 font-inter shadow-none">
+        <Card className="rounded-xl p-2 font-inter shadow-none" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-light)' }}>
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
               <div>
-                <h2 className="text-3xl font-bold mb-2 text-gray-900">156</h2>
-                <p className="text-gray-600 font-poppins">Total Vendors</p>
+                <h2 className="text-3xl font-bold mb-2">156</h2>
+                <p className="font-poppins" style={{ color: 'var(--text-secondary)' }}>Total Vendors</p>
               </div>
-              <Users className="h-8 w-8 text-gray-400" />
+              <Users className="h-8 w-8" style={{ color: 'var(--text-secondary)' }} />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white rounded-xl border border-gray-200 p-2 font-inter shadow-none">
+        <Card className="rounded-xl p-2 font-inter shadow-none" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-light)' }}>
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
               <div>
-                <h2 className="text-3xl font-bold mb-2 text-gray-900">Online</h2>
-                <p className="text-gray-600 font-poppins">System Status</p>
+                <h2 className="text-3xl font-bold mb-2">Online</h2>
+                <p className="font-poppins" style={{ color: 'var(--text-secondary)' }}>System Status</p>
               </div>
-              <Shield className="h-8 w-8 text-gray-400" />
+              <Shield className="h-8 w-8" style={{ color: 'var(--text-secondary)' }} />
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Categories Management */}
-      <div className="mt-6 p-4 border border-gray-200 rounded-xl mb-6 bg-white">
+      <div className="mt-6 p-4 rounded-xl mb-6" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-light)' }}>
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-xl font-semibold text-gray-900">Category Management</h2>
-            <p className="text-gray-600">Manage product categories that vendors can use</p>
+            <h2 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>Category Management</h2>
+            <p style={{ color: 'var(--text-secondary)' }}>Manage product categories that vendors can use</p>
           </div>
           <Dialog open={showAddCategory} onOpenChange={setShowAddCategory}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+            <Button className="text-black" style={{ backgroundColor: '#00FF00' }}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Category
               </Button>
@@ -511,7 +511,8 @@ export default function AdminDashboardPage() {
                   </DialogClose>
                   <Button 
                     type="submit" 
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    className="text-black"
+                    style={{ backgroundColor: '#00FF00' }}
                     disabled={categoryLoading}
                   >
                     {categoryLoading ? 'Creating...' : 'Create Category'}
@@ -596,7 +597,8 @@ export default function AdminDashboardPage() {
                 </DialogClose>
                 <Button 
                   type="submit" 
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="text-black"
+                  style={{ backgroundColor: '#00FF00' }}
                   disabled={categoryLoading}
                 >
                   {categoryLoading ? 'Updating...' : 'Update Category'}
@@ -622,50 +624,91 @@ export default function AdminDashboardPage() {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {categories.map((category) => (
-              <Card key={category.id} className="border border-gray-200 shadow-none bg-white">
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-gray-900">{category.name}</h3>
-                    <div className="flex space-x-1">
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        onClick={() => handleEditCategory(category)}
-                        className="text-gray-600 hover:text-blue-600"
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        onClick={() => handleDeleteCategory(category.id)}
-                        className="text-gray-600 hover:text-red-600"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+              <div 
+                key={category.id} 
+                className="group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-teal-200"
+              >
+                {/* Category Image */}
+                <div className="relative h-32 bg-gradient-to-br from-teal-50 to-blue-50 overflow-hidden">
+                  {category.image ? (
+                    <img 
+                      src={category.image} 
+                      alt={category.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <div className="text-6xl opacity-20">📁</div>
                     </div>
-                  </div>
-                  
-                  {category.description && (
-                    <p className="text-gray-600 text-sm mb-3">{category.description}</p>
                   )}
                   
-                  <div className="flex items-center justify-between">
-                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                  {/* Overlay Actions */}
+                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => handleEditCategory(category)}
+                        className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white hover:scale-110 transition-all duration-200"
+                        title="Edit Category"
+                      >
+                        <Edit className="h-4 w-4 text-teal-600" />
+                      </button>
+                      <button 
+                        onClick={() => handleDeleteCategory(category.id)}
+                        className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white hover:scale-110 transition-all duration-200"
+                        title="Delete Category"
+                      >
+                        <Trash2 className="h-4 w-4 text-red-600" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Status Badge */}
+                  <div className="absolute top-3 left-3">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold shadow-md backdrop-blur-sm ${
                       category.is_active 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
+                        ? 'bg-green-500/90 text-white' 
+                        : 'bg-red-500/90 text-white'
                     }`}>
                       {category.is_active ? 'Active' : 'Inactive'}
                     </span>
-                    <span className="text-xs text-gray-500">
-                      {new Date(category.created_at).toLocaleDateString()}
+                  </div>
+                </div>
+
+                {/* Category Content */}
+                <div className="p-4">
+                  <div className="mb-3">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-teal-600 transition-colors duration-300">
+                      {category.name}
+                    </h3>
+                    {category.description && (
+                      <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
+                        {category.description}
+                      </p>
+                    )}
+                  </div>
+
+                      {/* Footer Info */}
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <div className="w-2 h-2 bg-teal-400 rounded-full"></div>
+                      <span>Created</span>
+                    </div>
+                    <span className="text-xs font-medium text-gray-600">
+                      {new Date(category.created_at).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
                     </span>
                   </div>
-                </CardContent>
-              </Card>
+
+                </div>
+
+                {/* Hover Effect Border */}
+                <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-teal-300 transition-all duration-300 pointer-events-none"></div>
+              </div>
             ))}
           </div>
         )}

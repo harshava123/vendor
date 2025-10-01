@@ -19,6 +19,7 @@ import {
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
 import Cookies from "js-cookie";
+import { apiClient } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import {
@@ -41,11 +42,11 @@ const Home = () => {
 
   useEffect(() => {
     let cancelled = false;
-    const readToken = () =>
-      Cookies.get("token") ||
-      (typeof window !== "undefined"
-        ? localStorage.getItem("token") || undefined
-        : undefined);
+    const readToken = () => {
+      // Prefer app auth token; fallback to cookie 'token' for legacy
+      const local = typeof window !== "undefined" ? apiClient.getAuthToken() || localStorage.getItem("authToken") || localStorage.getItem("token") : undefined;
+      return local || Cookies.get("token") || undefined;
+    };
     const token = readToken();
     if (!token) {
       // Re-check shortly to avoid race condition after OTP set
@@ -138,60 +139,60 @@ const Home = () => {
   // if (loading) return <p className="text-center mt-20">Loading...</p>;
 
   return (
-    <div className="bg-gray-50 min-h-screen px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen px-4 sm:px-6 lg:px-8" style={{ backgroundColor: 'var(--light-gray)', color: 'var(--text-primary)' }}>
       {/* Welcome Heading */}
       <div className="py-4 sm:py-6">
-        <h1 className="text-xl sm:text-2xl font-semibold font-poppins italic text-[#262626]">
+        <h1 className="text-xl sm:text-2xl font-semibold font-poppins italic" style={{ color: 'var(--text-primary)' }}>
           Hi XYZ, Welcome to your Dashboard
         </h1>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6">
-        <Card className="bg-white rounded-xl border border-neutral-300 p-2 font-inter shadow-none">
+        <Card className="rounded-xl p-2 font-inter shadow-none" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-light)' }}>
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
               <div>
-                <h2 className="text-3xl font-bold mb-2 ">120</h2>
-                <p className="text-gray-600 font-poppins">Total Orders Today</p>
+                <h2 className="text-3xl font-bold mb-2">120</h2>
+                <p className="font-poppins" style={{ color: 'var(--text-secondary)' }}>Total Orders Today</p>
               </div>
-              <ShoppingBag className="h-8 w-8 text-gray-400" />
+              <ShoppingBag className="h-8 w-8" style={{ color: 'var(--text-secondary)' }} />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white rounded-xl border border-neutral-300 p-2 font-inter shadow-none">
+        <Card className="rounded-xl p-2 font-inter shadow-none" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-light)' }}>
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
               <div>
-                <h2 className="text-3xl font-bold mb-2 ">4120</h2>
-                <p className="text-gray-600 font-poppins">Monthly Sales</p>
+                <h2 className="text-3xl font-bold mb-2">4120</h2>
+                <p className="font-poppins" style={{ color: 'var(--text-secondary)' }}>Monthly Sales</p>
               </div>
-              <LineChart className="h-8 w-8 text-gray-400" />
+              <LineChart className="h-8 w-8" style={{ color: 'var(--text-secondary)' }} />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white rounded-xl border border-neutral-300 p-2 font-inter shadow-none">
+        <Card className="rounded-xl p-2 font-inter shadow-none" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-light)' }}>
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
               <div>
-                <h2 className="text-3xl font-bold mb-2 ">24</h2>
-                <p className="text-gray-600 font-poppins">Total Customers Today</p>
+                <h2 className="text-3xl font-bold mb-2">24</h2>
+                <p className="font-poppins" style={{ color: 'var(--text-secondary)' }}>Total Customers Today</p>
               </div>
-              <Users className="h-8 w-8 text-gray-400" />
+              <Users className="h-8 w-8" style={{ color: 'var(--text-secondary)' }} />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white rounded-xl border border-neutral-300 p-2 font-inter shadow-none">
+        <Card className="rounded-xl p-2 font-inter shadow-none" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-light)' }}>
           <CardContent className="p-4">
             <div className="flex justify-between items-start">
               <div>
-                <h2 className="text-3xl font-bold mb-2 ">32k</h2>
-                <p className="text-gray-600 font-poppins">Daily Revenue</p>
+                <h2 className="text-3xl font-bold mb-2">32k</h2>
+                <p className="font-poppins" style={{ color: 'var(--text-secondary)' }}>Daily Revenue</p>
               </div>
-              <DollarSign className="h-8 w-8 text-gray-400" />
+              <DollarSign className="h-8 w-8" style={{ color: 'var(--text-secondary)' }} />
             </div>
           </CardContent>
         </Card>
@@ -199,18 +200,18 @@ const Home = () => {
 
       {/* Charts */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 mb-6">
-        <Card className="bg-white rounded-lg shadow">
+        <Card className="rounded-lg shadow" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-light)' }}>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base sm:text-lg font-semibold">Sales Comparison Graph</CardTitle>
+            <CardTitle className="text-base sm:text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Sales Comparison Graph</CardTitle>
           </CardHeader>
           <CardContent className="h-64 sm:h-80">
             <Bar data={salesComparisonData} options={chartOptions} />
           </CardContent>
         </Card>
 
-        <Card className="bg-white rounded-lg shadow">
+        <Card className="rounded-lg shadow" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-light)' }}>
           <CardHeader className="pb-2">
-            <CardTitle className="text-base sm:text-lg font-semibold">Revenue Track</CardTitle>
+            <CardTitle className="text-base sm:text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Revenue Track</CardTitle>
           </CardHeader>
           <CardContent className="h-64 sm:h-80">
             <Bar data={revenueTrackData} options={chartOptions} />
@@ -218,9 +219,9 @@ const Home = () => {
         </Card>
       </div>
 
-    <div className="mt-6 p-4 border border-neutral-300 rounded-xl mb-6 ">
+    <div className="mt-6 p-4 rounded-xl mb-6" style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-light)' }}>
       <Table>
-            <TableHeader className="border-b border-neutral-200">
+            <TableHeader className="border-b" style={{ borderColor: 'var(--border-light)' }}>
               <TableRow className="py-6">
                 <TableHead>SN</TableHead>
                 <TableHead>Order ID</TableHead>
@@ -273,7 +274,7 @@ const Home = () => {
                   date: "10/11/2023, 14:23",
                 },
               ].map((order) => (
-                <TableRow key={order.id} className="border-b border-neutral-200 py-6">
+                <TableRow key={order.id} className="border-b py-6" style={{ borderColor: 'var(--border-light)' }}>
                   <TableCell>{order.id}</TableCell>
                   <TableCell>{order.orderId}</TableCell>
                   <TableCell>{order.name}</TableCell>

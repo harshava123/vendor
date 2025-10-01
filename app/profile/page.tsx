@@ -4,6 +4,8 @@ import { FilePenLine, Download, FileText, LogOut, Upload } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { apiClient } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 interface ProfileData {
   vendorID: string;
@@ -22,6 +24,7 @@ interface ProfileData {
 }
 
 export default function Profile() {
+  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -29,7 +32,13 @@ export default function Profile() {
   const [, setIdProofFile] = useState<File | null>(null);
 
   useEffect(() => {
+    const token = apiClient.getAuthToken() || localStorage.getItem('authToken') || localStorage.getItem('token');
+    if (!token) {
+      router.replace('/login');
+      return;
+    }
     fetchProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchProfile = async () => {

@@ -35,20 +35,22 @@ export default function Inventory() {
 
   useEffect(() => {
     checkAuthentication();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkAuthentication = async () => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = apiClient.getAuthToken() || localStorage.getItem('authToken') || localStorage.getItem('token');
       if (token) {
         setIsAuthenticated(true);
         fetchProducts();
       } else {
-        window.location.href = '/login';
+        // Allow route guard to handle; soft navigate
+        window.location.assign('/login');
       }
     } catch (error) {
       console.error('Auth check error:', error);
-      window.location.href = '/login';
+      window.location.assign('/login');
     }
   };
 
@@ -141,7 +143,7 @@ export default function Inventory() {
             />
           </div>
           <Link href="/add-product">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-md">
+            <Button className="rounded-md text-black" style={{ backgroundColor: '#00FF00' }}>
               <Plus className="h-4 w-4 mr-2" /> Add Item
             </Button>
           </Link>
@@ -159,7 +161,7 @@ export default function Inventory() {
             {searchQuery ? 'No products found matching your search.' : 'No products found.'}
           </div>
           <Link href="/add-product">
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="text-black" style={{ backgroundColor: '#00FF00' }}>
               <Plus className="h-4 w-4 mr-2" /> Add Your First Product
             </Button>
           </Link>
@@ -204,11 +206,11 @@ export default function Inventory() {
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center gap-2">
                     <span className="text-lg font-bold text-green-600">
-                      ${product.price}
+                      ₹{product.discount_price || product.price}
                     </span>
                     {product.discount_price && (
                       <span className="text-sm text-gray-500 line-through">
-                        ${product.discount_price}
+                        ₹{product.price}
                       </span>
                     )}
                   </div>

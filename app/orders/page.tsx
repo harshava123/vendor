@@ -159,11 +159,11 @@ export default function Orders() {
   };
 
   return (
-    <div className={`${poppins.className} p-6 relative`}>
-      <h1 className="text-3xl font-bold mb-6">ORDER DETAILS</h1>
+    <div className={`${poppins.className} p-4 sm:p-6 relative`}>
+      <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 sm:mb-6">ORDER DETAILS</h1>
       
       {/* Order Summary */}
-      <div className="flex gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-4 mb-4 sm:mb-6">
         <div className="bg-black text-white px-4 py-2 rounded-lg">
           {pagination.totalOrders} Total Orders
         </div>
@@ -171,9 +171,9 @@ export default function Orders() {
       </div>
 
       {/* Filters */}
-      <div className="flex justify-end gap-2 items-center mb-6">
-        <div className="flex items-center gap-4">
-          <span>Select date</span>
+      <div className="flex flex-col sm:flex-row sm:justify-end gap-2 sm:items-center mb-4 sm:mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
+          <span className="text-sm sm:text-base">Select date</span>
           <Input
             type="date"
             value={selectedDate}
@@ -203,7 +203,7 @@ export default function Orders() {
           <Input
             type="text"
             placeholder="Search"
-            className="pl-10 h-10 w-[300px]"
+            className="pl-10 h-10 w-full sm:w-[300px]"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -212,6 +212,7 @@ export default function Orders() {
 
       {/* Orders Table */}
       <div className="bg-white p-2 rounded-lg shadow overflow-x-auto relative">
+        <div className="min-w-full">
         <Table>
           <TableHeader className="border-b border-neutral-200">
             <TableRow className="py-6 text-sm font-medium">
@@ -268,11 +269,12 @@ export default function Orders() {
             )}
           </TableBody>
         </Table>
+        </div>
       </div>
 
       {/* Pagination */}
       {orders.length > 0 && (
-        <div className="mt-4 flex justify-center gap-2">
+        <div className="mt-4 flex justify-center gap-1 sm:gap-2 overflow-x-auto">
           {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
             <Button
               key={page}

@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useToast } from "@/hooks/use-toast"
+import { apiClient } from "@/lib/api"
+import { useRouter } from "next/navigation"
  
 
 interface Ad {
@@ -12,6 +14,7 @@ interface Ad {
 }
 
 export default function AddBanners() {
+  const router = useRouter()
   const [file, setFile] = useState<File | null>(null)
   const [bannerTitle, setBannerTitle] = useState('')
   const [isDragging, setIsDragging] = useState(false)
@@ -20,7 +23,13 @@ export default function AddBanners() {
   // const token = Cookies.get("token");
 
   useEffect(() => {
+    const token = apiClient.getAuthToken() || localStorage.getItem('authToken') || localStorage.getItem('token')
+    if (!token) {
+      router.replace('/login')
+      return
+    }
     fetchAds();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAds = async () => {

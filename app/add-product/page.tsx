@@ -35,8 +35,30 @@ export default function AddProduct() {
   });
 
   useEffect(() => {
-    fetchCategories();
+    checkAuthentication();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const checkAuthentication = async () => {
+    try {
+      const token = apiClient.getAuthToken() || localStorage.getItem('authToken') || localStorage.getItem('token');
+      if (!token) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to add products",
+          variant: "destructive",
+        });
+        router.push('/login');
+        return;
+      }
+      
+      console.log('🔐 User authenticated, fetching categories...');
+      fetchCategories();
+    } catch (error) {
+      console.error('Auth check error:', error);
+      router.push('/login');
+    }
+  };
 
   const fetchCategories = async () => {
     try {
@@ -115,7 +137,12 @@ export default function AddProduct() {
         colors: productData.colors.filter(color => color.trim() !== '')
       };
 
+      console.log('🚀 Submitting product with payload:', payload);
+      const token = localStorage.getItem('authToken');
+      console.log('🔑 Auth token exists:', !!token);
+      
       const response = await apiClient.createProduct(payload);
+      console.log('📡 Product creation response:', response);
       
       if (response.success) {
         toast({
@@ -166,12 +193,12 @@ export default function AddProduct() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
       <div className="max-w-2xl mx-auto px-4">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h1 className="text-2xl font-bold mb-6">Add New Product</h1>
+        <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+          <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Add New Product</h1>
           
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Product Name */}
             <div>
               <label className="block text-sm font-medium mb-2">
@@ -391,7 +418,7 @@ export default function AddProduct() {
             </div>
 
             {/* Submit Button */}
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Button
                 type="submit"
                 disabled={loading}

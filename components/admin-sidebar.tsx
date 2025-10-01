@@ -1,13 +1,21 @@
 "use client"
-import { Package, Users, BarChart3, Settings, LogOut, Shield } from "lucide-react"
+import { Package, Users, BarChart3, Settings, LogOut, Shield, ChevronLeft } from "lucide-react"
 import { useState, useEffect } from "react"
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { adminLogout } from '@/lib/admin-api'
 import { useRouter } from 'next/navigation'
 import { toast } from '@/hooks/use-toast'
+import { TrulluLogo } from './TrulluLogo'
 
-export function AdminSidebar() {
+interface AdminSidebarProps {
+  isCollapsed: boolean;
+  onToggleCollapse: () => void;
+  isMobile?: boolean;
+  onMobileClose?: () => void;
+}
+
+export function AdminSidebar({ isCollapsed, onToggleCollapse, isMobile = false, onMobileClose }: AdminSidebarProps) {
   const [activeUrl, setActiveUrl] = useState<string>("")
   const pathname = usePathname()
   const router = useRouter()
@@ -66,35 +74,93 @@ export function AdminSidebar() {
   }
 
   return (
-    <div className="h-screen w-80 bg-gray-100 border-r border-gray-300 flex flex-col fixed left-0 top-0 z-10">
+    <div 
+      className="h-full flex flex-col slide-in-left transition-all duration-300 ease-in-out sidebar-no-scroll"
+      style={{ 
+        width: '100%',
+        backgroundColor: isMobile ? '#ffffff' : 'var(--sidebar-bg)',
+        borderRadius: isMobile ? '0' : '0 16px 16px 0',
+        boxShadow: isMobile ? '4px 0 12px rgba(0, 0, 0, 0.3)' : '4px 0 12px rgba(0, 0, 0, 0.15), 2px 0 4px rgba(0, 0, 0, 0.1)',
+        border: 'none',
+        marginRight: isMobile ? '0' : '8px',
+        zIndex: isMobile ? 999 : 'auto',
+        minHeight: '100vh'
+      }}
+    >
       {/* Header */}
-      <div className="p-6 border-b border-gray-300">
-        <div className="flex items-center gap-4">
-          <div className="p-3 bg-blue-100 rounded-xl">
-            <Shield className="h-8 w-8 text-blue-600" />
-          </div>
-          <div>
-            <h2 className="font-semibold text-lg text-gray-900">Admin Panel</h2>
-            <p className="text-base text-gray-600">System Administrator</p>
-          </div>
+      <div className="p-4 relative" style={{ borderBottom: 'none' }}>
+        <div className="flex flex-col items-center gap-3">
+          {/* Trullu Logo */}
+          <TrulluLogo size="xl" variant="teal" showText={false} />
+          {(!isCollapsed || isMobile) && (
+            <div className="text-center">
+              <h2 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Admin Panel</h2>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>System</p>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Administrator</p>
+            </div>
+          )}
         </div>
+          {/* Toggle Button - Always visible */}
+          <button 
+            onClick={isMobile ? onMobileClose : onToggleCollapse} 
+            className="absolute top-3 right-3 p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 z-10"
+            style={{ 
+              color: 'var(--text-secondary)',
+              backgroundColor: 'rgba(255, 255, 255, 0.8)',
+              backdropFilter: 'blur(4px)'
+            }}
+          >
+            {isMobile ? (
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <ChevronLeft className={`h-4 w-4 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} />
+            )}
+          </button>
       </div>
       
       {/* Navigation */}
-      <div className="flex-1 p-6 overflow-y-auto">
-        <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6">Navigation</h3>
+      <div className="flex-1 p-4 sidebar-no-scroll">
+        <div className="space-y-1">
+          {!isCollapsed && (
+            <h3 
+              className="text-xs font-semibold uppercase tracking-wider mb-4 px-2"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              Navigation
+            </h3>
+          )}
           {items.map((item) => (
             <Link href={item.url} key={item.title}>
               <div
-                className={`flex items-center gap-4 rounded-lg px-4 py-3 text-base font-medium transition-colors duration-200 ${
+                className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300 ${
                   activeUrl === item.url
-                    ? "bg-blue-100 text-blue-700"
-                    : "text-gray-700 hover:bg-gray-200 hover:text-gray-900"
+                    ? "shadow-md"
+                    : "hover:shadow-sm"
                 }`}
+                style={{
+                  backgroundColor: activeUrl === item.url 
+                    ? 'var(--primary-teal)' 
+                    : 'transparent',
+                  color: activeUrl === item.url 
+                    ? 'white' 
+                    : 'var(--text-primary)',
+                  justifyContent: (isCollapsed && !isMobile) ? 'center' : 'flex-start'
+                }}
+                onMouseEnter={(e) => {
+                  if (activeUrl !== item.url) {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeUrl !== item.url) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }
+                }}
               >
-                <item.icon className="h-5 w-5" />
-                <span>{item.title}</span>
+                <item.icon className="h-4 w-4" />
+                {(!isCollapsed || isMobile) && <span>{item.title}</span>}
               </div>
             </Link>
           ))}
@@ -102,13 +168,24 @@ export function AdminSidebar() {
       </div>
 
       {/* Footer */}
-      <div className="p-6 border-t border-gray-300">
+      <div className="p-4 border-t" style={{ borderColor: 'var(--border-light)' }}>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-4 w-full rounded-lg px-4 py-3 text-base font-medium text-red-600 hover:bg-red-100 hover:text-red-700 transition-colors duration-200"
+          className="flex items-center gap-3 w-full rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-300"
+          style={{ 
+            color: '#dc2626',
+            backgroundColor: 'transparent',
+            justifyContent: isCollapsed ? 'center' : 'flex-start'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = 'rgba(220, 38, 38, 0.1)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = 'transparent';
+          }}
         >
-          <LogOut className="h-5 w-5" />
-          <span>Logout</span>
+          <LogOut className="h-4 w-4" />
+          {(!isCollapsed || isMobile) && <span>Logout</span>}
         </button>
       </div>
     </div>

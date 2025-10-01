@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { adminApiClient } from '@/lib/admin-api';
+import { useRouter } from 'next/navigation';
 
 interface Category {
   id: string;
@@ -20,6 +21,7 @@ interface Category {
 }
 
 export default function AdminCategoriesPage() {
+  const router = useRouter();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddCategory, setShowAddCategory] = useState(false);
@@ -35,8 +37,14 @@ export default function AdminCategoriesPage() {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   useEffect(() => {
+    const adminToken = adminApiClient.getAdminToken?.() || localStorage.getItem('adminToken');
+    const adminEmail = typeof window !== 'undefined' ? localStorage.getItem('adminEmail') : null;
+    if (!adminToken || adminEmail !== 'Admin@gmail.com') {
+      router.replace('/login');
+      return;
+    }
     fetchCategories();
-  }, []);
+  }, [router]);
 
   const fetchCategories = async () => {
     setLoading(true);
@@ -258,20 +266,20 @@ export default function AdminCategoriesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--light-gray)', color: 'var(--text-primary)' }}>
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="shadow-sm border-b" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-light)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="py-6">
-            <h1 className="text-3xl font-bold text-gray-900">Category Management</h1>
-            <p className="text-gray-600">Manage product categories</p>
+          <div className="py-4 sm:py-6">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>Category Management</h1>
+            <p className="text-sm sm:text-base" style={{ color: 'var(--text-secondary)' }}>Manage product categories</p>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Categories Management */}
-        <Card>
+        <Card style={{ backgroundColor: 'var(--card-bg)', border: '1px solid var(--border-light)' }}>
           <CardHeader>
             <div className="flex justify-between items-center">
               <div>
@@ -282,40 +290,42 @@ export default function AdminCategoriesPage() {
               </div>
               <Dialog open={showAddCategory} onOpenChange={setShowAddCategory}>
                 <DialogTrigger asChild>
-                  <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <Button className="text-black" style={{ backgroundColor: '#00FF00' }}>
                     <Plus className="h-4 w-4 mr-2" />
                     Add Category
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-md">
                   <DialogHeader>
-                    <DialogTitle>Add New Category</DialogTitle>
+                    <DialogTitle className="text-white">Add New Category</DialogTitle>
                   </DialogHeader>
-                  <form onSubmit={handleAddCategory} className="space-y-4">
+                  <form onSubmit={handleAddCategory} className="space-y-4 text-white">
                     <div>
-                      <Label htmlFor="name">Category Name *</Label>
+                      <Label htmlFor="name" className="text-white">Category Name *</Label>
                       <Input
                         id="name"
                         value={newCategory.name}
                         onChange={(e) => setNewCategory(prev => ({ ...prev, name: e.target.value }))}
                         placeholder="Enter category name"
                         required
+                        className="mt-2"
                       />
                     </div>
                     
                     <div>
-                      <Label htmlFor="description">Description</Label>
+                      <Label htmlFor="description" className="text-white">Description</Label>
                       <Textarea
                         id="description"
                         value={newCategory.description}
                         onChange={(e) => setNewCategory(prev => ({ ...prev, description: e.target.value }))}
                         placeholder="Enter category description"
                         rows={3}
+                        className="mt-2"
                       />
                     </div>
                     
                     <div>
-                      <Label htmlFor="image">Category Image</Label>
+                      <Label htmlFor="image" className="text-white">Category Image</Label>
                       <div className="space-y-2">
                         <Input
                           id="image"
@@ -323,7 +333,7 @@ export default function AdminCategoriesPage() {
                           accept="image/*"
                           onChange={handleFileChange}
                           disabled={uploadingImage}
-                          className="cursor-pointer"
+                          className="cursor-pointer mt-2"
                         />
                         {uploadingImage && (
                           <p className="text-sm text-blue-600">Uploading image...</p>
@@ -349,7 +359,8 @@ export default function AdminCategoriesPage() {
                       </DialogClose>
                       <Button 
                         type="submit" 
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                        className="text-black"
+                        style={{ backgroundColor: '#00FF00' }}
                         disabled={categoryLoading}
                       >
                         {categoryLoading ? 'Creating...' : 'Create Category'}
@@ -363,53 +374,96 @@ export default function AdminCategoriesPage() {
           
           <CardContent>
             {loading ? (
-              <div className="text-center py-8 text-gray-600">Loading categories...</div>
+              <div className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>Loading categories...</div>
             ) : categories.length === 0 ? (
-              <div className="text-center py-8 text-gray-600">
+              <div className="text-center py-8" style={{ color: 'var(--text-secondary)' }}>
                 No categories found. Create your first category to get started.
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {categories.map((category) => (
-                  <div key={category.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-semibold text-lg">{category.name}</h3>
-                      <div className="flex space-x-1">
-                        <Button 
-                          size="sm" 
-                          variant="outline"
-                          onClick={() => handleEditCategory(category)}
-                          className="text-gray-600 hover:text-blue-600"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          size="sm" 
-                          variant="outline" 
-                          onClick={() => handleDeleteCategory(category.id)}
-                          className="text-red-600 hover:text-red-700"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                  <div 
+                    key={category.id} 
+                    className="group relative bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-teal-200"
+                  >
+                    {/* Category Image */}
+                    <div className="relative h-32 bg-gradient-to-br from-teal-50 to-blue-50 overflow-hidden">
+                      {category.image ? (
+                        <img 
+                          src={category.image} 
+                          alt={category.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <div className="text-6xl opacity-20">📁</div>
+                        </div>
+                      )}
+                      
+                      {/* Overlay Actions */}
+                      <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="flex gap-2">
+                          <button 
+                            onClick={() => handleEditCategory(category)}
+                            className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white hover:scale-110 transition-all duration-200"
+                            title="Edit Category"
+                          >
+                            <Edit className="h-4 w-4 text-teal-600" />
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteCategory(category.id)}
+                            className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white hover:scale-110 transition-all duration-200"
+                            title="Delete Category"
+                          >
+                            <Trash2 className="h-4 w-4 text-red-600" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Status Badge */}
+                      <div className="absolute top-3 left-3">
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold shadow-md backdrop-blur-sm ${
+                          category.is_active 
+                            ? 'bg-green-500/90 text-white' 
+                            : 'bg-red-500/90 text-white'
+                        }`}>
+                          {category.is_active ? 'Active' : 'Inactive'}
+                        </span>
                       </div>
                     </div>
-                    
-                    {category.description && (
-                      <p className="text-gray-600 text-sm mb-2">{category.description}</p>
-                    )}
-                    
-                    <div className="flex items-center justify-between">
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        category.is_active 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {category.is_active ? 'Active' : 'Inactive'}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {new Date(category.created_at).toLocaleDateString()}
-                      </span>
+
+                    {/* Category Content */}
+                    <div className="p-4">
+                      <div className="mb-3">
+                        <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-teal-600 transition-colors duration-300">
+                          {category.name}
+                        </h3>
+                        {category.description && (
+                          <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
+                            {category.description}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Footer Info */}
+                      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                        <div className="flex items-center gap-2 text-xs text-gray-500">
+                          <div className="w-2 h-2 bg-teal-400 rounded-full"></div>
+                          <span>Created</span>
+                        </div>
+                        <span className="text-xs font-medium text-gray-600">
+                          {new Date(category.created_at).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </span>
+                      </div>
+
                     </div>
+
+                    {/* Hover Effect Border */}
+                    <div className="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-teal-300 transition-all duration-300 pointer-events-none"></div>
                   </div>
                 ))}
               </div>
@@ -491,7 +545,8 @@ export default function AdminCategoriesPage() {
                 </DialogClose>
                 <Button 
                   type="submit" 
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="text-black"
+                  style={{ backgroundColor: '#00FF00' }}
                   disabled={categoryLoading}
                 >
                   {categoryLoading ? 'Updating...' : 'Update Category'}

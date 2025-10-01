@@ -7,6 +7,7 @@ import { toast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Poppins } from 'next/font/google';
+import { apiClient } from '@/lib/api';
 const poppins = Poppins({ weight: ["400", "600", "700"], subsets: ["latin"] });
 
 
@@ -43,8 +44,6 @@ interface Category {
 export default function Products() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   // const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
   // const [subCategories, setSubCategories] = useState<SubCategoryInput[]>([{
   //   subCategoryName: '',
@@ -54,17 +53,18 @@ export default function Products() {
 
   useEffect(() => {
     checkAuthentication();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkAuthentication = async () => {
     try {
-      const token = localStorage.getItem('authToken');
+      const token = apiClient.getAuthToken() || localStorage.getItem('authToken') || localStorage.getItem('token');
       if (token) {
-        setIsAuthenticated(true);
         fetchCategories();
       } else {
         // Redirect to login if not authenticated
-        window.location.href = '/login';
+        // Don't hard redirect immediately; allow route guard to handle
+        window.location.assign('/login');
       }
     } catch (error) {
       console.error('Auth check error:', error);
@@ -74,29 +74,60 @@ export default function Products() {
 
   const fetchCategories = async () => {
     try {
-      setLoading(true);
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/categories`);
-      const result = await response.json();
       
-      if (result.success) {
+      console.log('🔄 Fetching categories...');
+      
+      // Fetch all categories first
+      const categoriesResult = await apiClient.getCategories();
+      console.log('📡 Categories API response:', categoriesResult);
+      
+      if (categoriesResult.success) {
+        let categoriesToShow = categoriesResult.data;
+        
+        // Try to fetch vendor's products to filter categories
+        try {
+          const vendorProductsResult = await apiClient.getVendorProducts();
+          console.log('📡 Vendor Products API response:', vendorProductsResult);
+          
+          if (vendorProductsResult.success && vendorProductsResult.data.length > 0) {
+            // Get unique category IDs from vendor's products
+            const vendorCategoryIds = new Set(
+              vendorProductsResult.data.map((product: { category_id: string }) => product.category_id)
+            );
+            
+            // Filter categories to only include those where vendor has products
+            categoriesToShow = categoriesResult.data.filter((category: { id: string }) => 
+              vendorCategoryIds.has(category.id)
+            );
+            console.log('🔒 Filtered to', categoriesToShow.length, 'vendor-specific categories');
+          } else {
+            console.log('📋 No vendor products found, showing all categories');
+          }
+        } catch (vendorError) {
+          console.log('⚠️ Vendor products fetch failed, showing all categories:', vendorError);
+        }
+        
         // Transform backend categories to match frontend format
-        const transformedCategories: Category[] = result.data.map((category: any) => ({
+        const transformedCategories: Category[] = categoriesToShow.map((category: { id: string; name: string; is_active: boolean; image?: string; created_at: string; updated_at?: string }) => ({
           categoryID: category.id,
           categoryName: category.name,
           status: category.is_active,
           imageUrl: category.image ? [category.image] : ['https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=400&fit=crop&crop=center'],
-          vendorID: 'current-vendor', // We'll get this from auth context
+          vendorID: 'current-vendor',
           createdAt: category.created_at,
           updatedAt: category.updated_at || category.created_at,
-          productSubCategories: [] // Subcategories can be added later
+          productSubCategories: []
         }));
+        
+        console.log('✅ Successfully loaded', transformedCategories.length, 'categories');
+        console.log('📋 Categories:', transformedCategories.map(c => c.categoryName));
         setCategories(transformedCategories);
       } else {
-        console.error('Failed to fetch categories:', result.message);
+        console.error('❌ Failed to fetch categories:', categoriesResult.message);
         setCategories([]);
       }
     } catch (error) {
-      console.error('Fetch categories error:', error);
+      console.error('❌ Fetch categories error:', error);
       toast({
         title: "Error",
         description: "Failed to load categories",
@@ -104,7 +135,7 @@ export default function Products() {
       });
       setCategories([]);
     } finally {
-      setLoading(false);
+      
     }
   };
 
@@ -176,34 +207,35 @@ export default function Products() {
   // };
 
   return (
-    <div className={`${poppins.className} p-6`}>
+    <div className={`${poppins.className} p-4 sm:p-6`}>
       {/* Header */}
-      <div className="flex justify-between items-center mb-8 mt-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8 mt-4 sm:mt-8">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Products</h1>
-          <h2 className="text-xl text-gray-600">Categories</h2>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-2">Products</h1>
+          <h2 className="text-lg sm:text-xl text-gray-600">Categories</h2>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <Input
               type="text"
               placeholder="Search"
-              className="pl-10 w-[300px] rounded-md border-gray-300"
+              className="pl-10 w-full sm:w-[300px] rounded-md border-gray-300"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <Link href="/add-product">
-            <Button className="bg-green-600 hover:bg-green-700 text-white rounded-md">
-              <Plus className="h-4 w-4 mr-2" /> Add Product
-            </Button>
-          </Link>
+           <Link href="/add-product" className="w-full sm:w-auto">
+             <Button className="rounded-md w-full sm:w-auto text-black" style={{ backgroundColor: '#00FF00' }}>
+               <Plus className="h-4 w-4 mr-2" /> 
+               Add Product
+             </Button>
+           </Link>
         </div>
       </div>
 
       {/* Categories Grid */}
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {categories.map((category) => (
           <div 
             key={category.categoryID}

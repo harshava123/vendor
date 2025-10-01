@@ -14,6 +14,7 @@ import {
 import { toast } from '@/hooks/use-toast';
 import { Poppins } from 'next/font/google';
 import { useRouter } from 'next/navigation';
+import { apiClient } from '@/lib/api';
 const poppins = Poppins({ weight: ["400", "600", "700"], subsets: ["latin"] });
 
 interface OrderItem {
@@ -102,7 +103,14 @@ export default function Users() {
   };
 
   useEffect(() => {
+    // Auth gate
+    const token = apiClient.getAuthToken() || localStorage.getItem('authToken') || localStorage.getItem('token');
+    if (!token) {
+      router.replace('/login');
+      return;
+    }
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const formatDate = (dateString: string) => {

@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
 import { toast } from "@/hooks/use-toast";
@@ -22,6 +22,19 @@ export default function Register() {
         idProof: ""
     });
     const [loading, setLoading] = useState(false);
+
+    // Prevent body scrolling
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+            
+            return () => {
+                document.body.style.overflow = 'unset';
+                document.documentElement.style.overflow = 'unset';
+            };
+        }
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({
@@ -84,6 +97,22 @@ export default function Register() {
             const result = await response.json();
 
             if (!response.ok) {
+                // Handle specific error cases
+                if (result.message && result.message.includes('already been registered')) {
+                    toast({
+                        title: "Email Already Exists",
+                        description: "This email address is already registered. Please use a different email or try logging in.",
+                        variant: "destructive",
+                    });
+                    
+                    // Clear the email field to help user
+                    setFormData(prev => ({
+                        ...prev,
+                        email: ''
+                    }));
+                    return;
+                }
+                
                 throw new Error(result.message || 'Registration failed');
             }
 
@@ -110,13 +139,13 @@ export default function Register() {
     };
 
     return (
-        <div className="min-h-screen bg-[#1E1E1E] flex items-center justify-center p-6">
-            <Card className="w-full max-w-[800px] bg-white rounded-2xl">
-                <CardContent className="p-8">
-                    <h1 className="text-3xl font-bold mb-8 text-center">Register as Vendor</h1>
+        <div className="fixed inset-0 bg-[#1E1E1E] flex items-center justify-center p-4 sm:p-6 overflow-hidden">
+            <Card className="w-full max-w-[1200px] bg-white rounded-2xl max-h-[85vh] overflow-y-auto">
+                <CardContent className="p-4 sm:p-6">
+                    <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center">Register as Vendor</h1>
                     
-                    <div className="space-y-6">
-                        <div className="grid gap-6 md:grid-cols-2">
+                    <div className="space-y-4">
+                        <div className="grid gap-4 md:grid-cols-2">
                             <div>
                                 <Label className="text-gray-600 mb-1">Vendor Name *</Label>
                                 <Input
@@ -212,7 +241,7 @@ export default function Register() {
                             />
                         </div>
 
-                        <div className="flex justify-between items-center pt-4">
+                        <div className="flex justify-between items-center pt-2">
                             <Button 
                                 onClick={() => router.push('/login')}
                                 variant="outline"

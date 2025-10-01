@@ -179,11 +179,11 @@ export default function CategoryProducts() {
       
       if (response.success && response.data) {
         // Extract URLs from uploaded files
-        const uploadedUrls = response.data.map((file: any) => file.fullUrl);
+        const uploadedUrls = response.data.map((file: { fullUrl: string }) => file.fullUrl);
         
         // Add uploaded image URLs to the images array
         setNewProduct(prev => ({
-          ...prev,
+        ...prev,
           images: [...prev.images.filter(img => img.trim() !== ''), ...uploadedUrls]
         }));
         
@@ -195,12 +195,12 @@ export default function CategoryProducts() {
         const fileInput = document.getElementById('image-upload') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
         
-        toast({
-          title: "Success",
+      toast({
+        title: "Success",
           description: "Images uploaded successfully",
           variant: "default",
-          className: "bg-green-500 text-white",
-        });
+        className: "bg-green-500 text-white",
+      });
       } else {
         throw new Error(response.message || 'Failed to upload images');
       }
@@ -265,12 +265,12 @@ export default function CategoryProducts() {
       const response = await apiClient.createProduct(payload);
       
       if (response.success) {
-        toast({
-          title: "Success",
+      toast({
+        title: "Success",
           description: "Product created successfully",
           variant: "default",
-          className: "bg-green-500 text-white",
-        });
+        className: "bg-green-500 text-white",
+      });
         
         // Reset form
         setNewProduct({
@@ -302,16 +302,19 @@ export default function CategoryProducts() {
       } else {
         throw new Error(response.message || 'Failed to create product');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error creating product:', error);
       
       let errorMessage = "Failed to create product";
-      if (error.message) {
+      if (error instanceof Error && error.message) {
         errorMessage = error.message;
-      } else if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.response?.data?.error) {
-        errorMessage = error.response.data.error;
+      } else {
+        const err = error as { response?: { data?: { message?: string; error?: string } } };
+        if (err.response?.data?.message) {
+          errorMessage = err.response.data.message as string;
+        } else if (err.response?.data?.error) {
+          errorMessage = err.response.data.error as string;
+        }
       }
       
       toast({
@@ -333,12 +336,12 @@ export default function CategoryProducts() {
       const response = await apiClient.deleteProduct(productId);
       
       if (response.success) {
-        toast({
-          title: "Success",
+      toast({
+        title: "Success",
           description: "Product deleted successfully",
           variant: "default",
-          className: "bg-green-500 text-white",
-        });
+        className: "bg-green-500 text-white",
+      });
         
         // Refresh products list
         fetchCategoryAndProducts();
@@ -362,7 +365,7 @@ export default function CategoryProducts() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--light-gray)', color: 'var(--text-primary)' }}>
         <div className="text-lg">Loading category...</div>
       </div>
     );
@@ -370,45 +373,45 @@ export default function CategoryProducts() {
 
   if (!category) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--light-gray)', color: 'var(--text-primary)' }}>
         <div className="text-lg text-red-600">Category not found</div>
       </div>
     );
   }
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-6 min-h-screen" style={{ backgroundColor: 'var(--light-gray)', color: 'var(--text-primary)' }}>
       {/* Header */}
-      <div className="flex justify-between items-center mb-8">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6 sm:mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           <Link href="/products">
             <Button variant="outline" size="sm">
               <ArrowLeft className="h-4 w-4 mr-2" /> Back to Categories
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold mb-2">{category.name}</h1>
-            <p className="text-gray-600">{category.description}</p>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-2">{category.name}</h1>
+            <p className="text-gray-600 text-sm sm:text-base">{category.description}</p>
           </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <Input
               type="text"
               placeholder="Search products..."
-              className="pl-10 w-[300px] rounded-md border-gray-300"
+              className="pl-10 w-full sm:w-[300px] rounded-md border-gray-700 bg-[#0f1115] text-[var(--text-primary)] placeholder-gray-500"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <Dialog open={showAddProduct} onOpenChange={setShowAddProduct}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-md">
+              <Button className="rounded-md w-full sm:w-auto text-black" style={{ backgroundColor: '#00FF00' }}>
                 <Plus className="h-4 w-4 mr-2" /> Add Product
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-[#0f1115] text-[var(--text-primary)]">
               <DialogHeader>
                 <DialogTitle>Add New Product to {category.name}</DialogTitle>
               </DialogHeader>
@@ -436,7 +439,7 @@ export default function CategoryProducts() {
                     value={newProduct.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
                     placeholder="Enter product description"
-                    className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full p-3 border border-gray-700 rounded-md focus:ring-2 focus:ring-[#00FF00] focus:border-transparent bg-[#0f1115]"
                     rows={3}
                   />
                 </div>
@@ -446,7 +449,7 @@ export default function CategoryProducts() {
                   <label className="block text-sm font-medium mb-2">
                     Price *
                   </label>
-                  <Input
+                <Input
                     type="number"
                     step="0.01"
                     value={newProduct.price}
@@ -461,8 +464,8 @@ export default function CategoryProducts() {
                   <label className="block text-sm font-medium mb-2">
                     Discount Price (optional)
                   </label>
-                  <Input
-                    type="number"
+                <Input
+                  type="number"
                     step="0.01"
                     value={newProduct.discount_price}
                     onChange={(e) => handleInputChange('discount_price', e.target.value)}
@@ -475,8 +478,8 @@ export default function CategoryProducts() {
                   <label className="block text-sm font-medium mb-2">
                     Stock Quantity
                   </label>
-                  <Input
-                    type="number"
+                <Input
+                  type="number"
                     value={newProduct.stock_quantity}
                     onChange={(e) => handleInputChange('stock_quantity', e.target.value)}
                     placeholder="Enter stock quantity"
@@ -490,7 +493,7 @@ export default function CategoryProducts() {
                   </label>
                   
                   {/* File Upload Section */}
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 mb-4">
+                  <div className="border-2 border-dashed border-gray-700 rounded-lg p-4 mb-4 bg-[#0f1115]">
                     <div className="text-center">
                       <input
                         id="image-upload"
@@ -502,14 +505,14 @@ export default function CategoryProducts() {
                       />
                       <label
                         htmlFor="image-upload"
-                        className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                        className="cursor-pointer inline-flex items-center px-4 py-2 border border-gray-700 rounded-md shadow-sm text-sm font-medium text-[var(--text-primary)] bg-[#151922] hover:bg-[#1a1f29]"
                       >
                         <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
                         Select Images
                       </label>
-                      <p className="text-xs text-gray-500 mt-2">
+                      <p className="text-xs text-gray-400 mt-2">
                         Select multiple images (JPG, PNG, GIF)
                       </p>
                     </div>
@@ -537,7 +540,7 @@ export default function CategoryProducts() {
                                 alt={`Preview ${index + 1}`}
                                 width={100}
                                 height={100}
-                                className="w-full h-20 object-cover rounded border"
+                            className="w-full h-20 object-cover rounded border border-gray-700"
                               />
                               <button
                                 type="button"
@@ -565,7 +568,7 @@ export default function CategoryProducts() {
                               alt={`Product image ${index + 1}`}
                               width={100}
                               height={100}
-                              className="w-full h-20 object-cover rounded border"
+                              className="w-full h-20 object-cover rounded border border-gray-700"
                             />
                             <button
                               type="button"
@@ -589,7 +592,7 @@ export default function CategoryProducts() {
                           value={image}
                           onChange={(e) => handleArrayChange('images', index, e.target.value)}
                           placeholder="Enter image URL"
-                          className="flex-1"
+                          className="flex-1 bg-[#0f1115] border-gray-700 text-[var(--text-primary)]"
                         />
                         {newProduct.images.length > 1 && (
                           <Button
@@ -629,9 +632,9 @@ export default function CategoryProducts() {
 
                 {/* Submit Button */}
                 <div className="flex gap-4 pt-4">
-                  <Button
+                <Button
                     onClick={handleAddProduct}
-                    disabled={loading}
+                  disabled={loading}
                     className="flex-1"
                   >
                     {loading ? 'Creating Product...' : 'Create Product'}
@@ -642,7 +645,7 @@ export default function CategoryProducts() {
                     onClick={() => setShowAddProduct(false)}
                   >
                     Cancel
-                  </Button>
+                </Button>
                 </div>
               </div>
             </DialogContent>
@@ -657,12 +660,12 @@ export default function CategoryProducts() {
         </div>
       ) : filteredProducts.length === 0 ? (
         <div className="text-center py-12">
-          <div className="text-lg text-gray-500 mb-4">
+          <div className="text-lg text-gray-400 mb-4">
             {searchQuery ? 'No products found matching your search.' : `No products found in ${category.name} category.`}
           </div>
           <Button 
             onClick={() => setShowAddProduct(true)}
-            className="bg-blue-600 hover:bg-blue-700"
+            className=""
           >
             <Plus className="h-4 w-4 mr-2" /> Add Your First Product
           </Button>
@@ -670,18 +673,18 @@ export default function CategoryProducts() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredProducts.map((product) => (
-            <div key={product.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <div key={product.id} className="rounded-lg shadow-sm hover:shadow-md transition-shadow" style={{ backgroundColor: 'var(--card-bg)' }}>
               <div className="relative h-48 w-full rounded-t-lg overflow-hidden">
                 {product.images && product.images.length > 0 ? (
-                  <Image
+              <Image
                     src={product.images[0]}
                     alt={product.name}
                     fill
                     className="object-cover"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-400">No Image</span>
+                  <div className="w-full h-full flex items-center justify-center bg-[#151922]">
+                    <span className="text-gray-500">No Image</span>
                   </div>
                 )}
                 {product.is_featured && (
@@ -692,25 +695,25 @@ export default function CategoryProducts() {
                 <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
                   Stock: {product.stock_quantity}
                 </div>
-              </div>
+            </div>
               
               <div className="p-4">
-                <h3 className="font-semibold text-lg line-clamp-2 mb-2">{product.name}</h3>
-                <p className="text-gray-600 text-sm mb-3 line-clamp-2">{product.description}</p>
+                <h3 className="font-semibold text-lg line-clamp-2 mb-2" style={{ color: 'var(--text-primary)' }}>{product.name}</h3>
+                <p className="text-gray-400 text-sm mb-3 line-clamp-2">{product.description}</p>
                 
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg font-bold text-green-600">
-                      ${product.price}
+                    <span className="text-lg font-bold" style={{ color: '#00FF00' }}>
+                      ₹{product.discount_price || product.price}
                     </span>
                     {product.discount_price && (
                       <span className="text-sm text-gray-500 line-through">
-                        ${product.discount_price}
+                        ₹{product.price}
                       </span>
                     )}
                   </div>
                   <span className={`px-2 py-1 rounded text-xs ${
-                    product.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    product.is_active ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'
                   }`}>
                     {product.is_active ? 'Active' : 'Inactive'}
                   </span>
@@ -738,21 +741,21 @@ export default function CategoryProducts() {
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
-                </div>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
       )}
 
       {/* Summary */}
       {!productsLoading && filteredProducts.length > 0 && (
-        <div className="mt-8 bg-white rounded-lg p-4 shadow-sm">
+        <div className="mt-8 rounded-lg p-4 shadow-sm" style={{ backgroundColor: 'var(--card-bg)' }}>
           <div className="flex justify-between items-center">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-400">
               Showing {filteredProducts.length} of {products.length} products in {category.name}
             </div>
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-400">
               Total Value: ${filteredProducts.reduce((sum, product) => sum + (product.price * product.stock_quantity), 0).toFixed(2)}
             </div>
           </div>
@@ -760,4 +763,4 @@ export default function CategoryProducts() {
       )}
     </div>
   );
-}
+} 
