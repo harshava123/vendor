@@ -36,7 +36,7 @@ const debugAdminInfo = () => {
 
 // Make debug function available globally
 if (typeof window !== 'undefined') {
-  window.debugAdminInfo = debugAdminInfo;
+  (window as any).debugAdminInfo = debugAdminInfo;
 }
 
 export default function AdminDashboardPage() {
