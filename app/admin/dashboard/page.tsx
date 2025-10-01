@@ -77,8 +77,8 @@ export default function AdminDashboardPage() {
       
       if (response.success && response.data) {
         console.log('📋 Fetched categories:', response.data);
-        console.log('🆔 Category IDs:', response.data.map(cat => ({ id: cat.id, type: typeof cat.id })));
-        setCategories(response.data);
+        console.log('🆔 Category IDs:', (response.data as Category[]).map((cat: Category) => ({ id: cat.id, type: typeof cat.id })));
+        setCategories(response.data as Category[]);
       } else {
         toast({
           title: "Error",
