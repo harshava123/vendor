@@ -94,7 +94,7 @@ export function AdminSidebar({ isCollapsed, onToggleCollapse, isMobile = false, 
           <TrulluLogo size="xl" variant="teal" showText={false} />
           {(!isCollapsed || isMobile) && (
             <div className="text-center">
-              <h2 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Admin Panel</h2>
+              <h2 className="font-semibold text-base" style={{ color: 'var(--text-primary)' }}>Admi Panel</h2>
               <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>System</p>
               <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Administrator</p>
             </div>
