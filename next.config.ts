@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Skip ESLint checks during production builds (handled separately in CI/local)
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   images: {
     domains: [
       'reportal-media.s3.ap-south-1.amazonaws.com',
