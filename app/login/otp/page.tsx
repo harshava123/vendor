@@ -96,7 +96,7 @@ export default function OTPVerification() {
       console.log(err);
       toast({
         title: "Error",
-        description: err.message || "Invalid OTP",
+        description: err instanceof Error ? err.message : "Invalid OTP",
         variant: "destructive",
       });
     } finally {
