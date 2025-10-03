@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Radio, Send, Square } from 'lucide-react'
 import { apiClient } from '@/lib/api'
 import { toast } from '@/hooks/use-toast'
+import WebRTCStreamer from '@/lib/webrtc-streamer'
 
 export default function OngoingLivestreamPage() {
   const router = useRouter()
@@ -19,6 +20,7 @@ export default function OngoingLivestreamPage() {
   ])
   const [draft, setDraft] = useState("")
   const [isEnding, setIsEnding] = useState(false)
+  const [webrtcStreamer, setWebrtcStreamer] = useState<WebRTCStreamer | null>(null)
   
   // Get stream key from URL
   const streamKey = searchParams.get('streamKey')
@@ -28,20 +30,41 @@ export default function OngoingLivestreamPage() {
       if (startedRef.current) return
       startedRef.current = true
       try {
-        const media = await navigator.mediaDevices.getUserMedia({ 
-          video: { 
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
-            facingMode: 'user'
-          }, 
-          audio: false 
-        })
-        streamRef.current = media
-        if (videoRef.current) {
-          const video = videoRef.current
-          video.srcObject = media
-          video.onloadedmetadata = () => {
-            video.play().catch(() => {})
+        // Initialize WebRTC streamer if we have a stream key
+        if (streamKey) {
+          const streamer = new WebRTCStreamer()
+          await streamer.initialize()
+          setWebrtcStreamer(streamer)
+          
+          // Get the media stream from the streamer
+          const media = streamer.getMediaStream()
+          if (media) {
+            streamRef.current = media
+            if (videoRef.current) {
+              const video = videoRef.current
+              video.srcObject = media
+              video.onloadedmetadata = () => {
+                video.play().catch(() => {})
+              }
+            }
+          }
+        } else {
+          // Fallback to direct media access if no stream key
+          const media = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+              facingMode: 'user'
+            }, 
+            audio: false 
+          })
+          streamRef.current = media
+          if (videoRef.current) {
+            const video = videoRef.current
+            video.srcObject = media
+            video.onloadedmetadata = () => {
+              video.play().catch(() => {})
+            }
           }
         }
       } catch (err: unknown) {
@@ -55,9 +78,12 @@ export default function OngoingLivestreamPage() {
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((t) => t.stop())
       }
+      if (webrtcStreamer) {
+        webrtcStreamer.disconnect()
+      }
       startedRef.current = false
     }
-  }, [])
+  }, [streamKey, webrtcStreamer])
 
   const handleSend = () => {
     const text = draft.trim()
@@ -75,6 +101,12 @@ export default function OngoingLivestreamPage() {
     setIsEnding(true);
     
     try {
+      // Stop WebRTC streamer if available (this will notify all viewers)
+      if (webrtcStreamer) {
+        console.log('🛑 Stopping WebRTC streamer...');
+        await webrtcStreamer.stopStream();
+      }
+      
       // Stop local media stream
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop())
