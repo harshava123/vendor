@@ -1,5 +1,5 @@
 "use client"
-import { Package, Users, BarChart3, Settings, LogOut, Shield, ChevronLeft } from "lucide-react"
+import { Package, Users, BarChart3, Settings, LogOut, ChevronLeft } from "lucide-react"
 import { useState, useEffect } from "react"
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'

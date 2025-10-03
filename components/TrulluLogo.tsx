@@ -3,7 +3,7 @@
 import Image from 'next/image';
 
 interface TrulluLogoProps {
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   variant?: 'light' | 'dark' | 'teal';
   className?: string;
   showText?: boolean;
@@ -20,7 +20,8 @@ export function TrulluLogo({ size = 'md', variant = 'teal', className = '', show
   const textSizeClasses = {
     sm: 'text-sm',
     md: 'text-base',
-    lg: 'text-lg'
+    lg: 'text-lg',
+    xl: 'text-xl'
   };
 
   const variantStyles = {
