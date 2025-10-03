@@ -24,7 +24,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
     const adminEmail = localStorage.getItem('adminEmail');
     const adminToken = localStorage.getItem('adminToken');
     const isAdminUser = adminEmail === 'Admin@gmail.com' && adminToken && pathname.startsWith('/admin');
-    setIsAdmin(isAdminUser);
+    setIsAdmin(!!isAdminUser);
 
     // Check if mobile
     const checkMobile = () => {
