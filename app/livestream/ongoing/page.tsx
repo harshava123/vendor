@@ -2,7 +2,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Card, CardContent } from "@/components/ui/card"
+import { Radio, Send, Square } from 'lucide-react'
 
 export default function OngoingLivestreamPage() {
   const router = useRouter()
@@ -21,7 +22,14 @@ export default function OngoingLivestreamPage() {
       if (startedRef.current) return
       startedRef.current = true
       try {
-        const media = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+        const media = await navigator.mediaDevices.getUserMedia({ 
+          video: { 
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            facingMode: 'user'
+          }, 
+          audio: false 
+        })
         streamRef.current = media
         if (videoRef.current) {
           const video = videoRef.current
@@ -45,30 +53,6 @@ export default function OngoingLivestreamPage() {
     }
   }, [])
 
-  // Prevent layout glitching by ensuring proper viewport handling
-  useEffect(() => {
-    const handleResize = () => {
-      // Force reflow to prevent layout issues
-      document.body.style.overflow = 'hidden'
-    }
-
-    const handleBeforeUnload = () => {
-      document.body.style.overflow = 'auto'
-    }
-
-    // Set initial styles
-    document.body.style.overflow = 'hidden'
-    
-    window.addEventListener('resize', handleResize)
-    window.addEventListener('beforeunload', handleBeforeUnload)
-
-    return () => {
-      document.body.style.overflow = 'auto'
-      window.removeEventListener('resize', handleResize)
-      window.removeEventListener('beforeunload', handleBeforeUnload)
-    }
-  }, [])
-
   const handleSend = () => {
     const text = draft.trim()
     if (!text) return
@@ -80,15 +64,12 @@ export default function OngoingLivestreamPage() {
   }
 
   const handleStop = () => {
-    // Stop the camera stream
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop())
     }
-    // Navigate back to livestream page
     router.push('/livestream')
   }
 
-  // Format time ago
   const formatTimeAgo = (timestamp: number) => {
     const now = Date.now();
     const diff = now - timestamp;
@@ -104,111 +85,84 @@ export default function OngoingLivestreamPage() {
   };
 
   return (
-    <>
-      <style jsx>{`
-        .vendor-livestream-container {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: black;
-          z-index: 50;
-          display: flex;
-          flex-direction: column;
-          overflow: hidden;
-        }
-        .vendor-chat-panel {
-          width: 320px;
-          min-width: 320px;
-          max-width: 320px;
-          flex-shrink: 0;
-          background: #111827;
-          border-left: 1px solid #374151;
-          display: flex;
-          flex-direction: column;
-        }
-        .vendor-video-container {
-          flex: 1;
-          min-width: 0;
-          background: black;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-      `}</style>
-      <div className="vendor-livestream-container">
-      {/* Header */}
-      <div className="bg-gray-900 px-4 py-3 flex items-center justify-between border-b border-gray-700 flex-shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-sm font-semibold">
-            K
+    <div className="h-full flex flex-col bg-gray-900">
+      {/* Stream Header */}
+      <div className="flex-shrink-0 bg-gray-800 border-b border-gray-700 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white text-sm font-semibold">
+              K
+            </div>
+            <div>
+              <h2 className="text-white font-semibold text-lg">Your Live Stream</h2>
+              <p className="text-gray-400 text-sm">You are live</p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-white font-semibold">Your Live Stream</h3>
-            <p className="text-gray-400 text-sm">You are live</p>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-red-500">
+              <Radio className="w-4 h-4 animate-pulse" />
+              <span className="text-sm font-medium">LIVE</span>
+            </div>
+            <Button 
+              onClick={handleStop}
+              variant="destructive"
+              size="sm"
+              className="bg-red-600 hover:bg-red-700"
+            >
+              <Square className="w-4 h-4 mr-2" />
+              End Stream
+            </Button>
           </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 text-red-500">
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-            <span className="text-sm font-medium">LIVE</span>
-          </div>
-          <Button 
-            onClick={handleStop} 
-            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
-          >
-            End Stream
-          </Button>
         </div>
       </div>
 
-      {/* Main Content - Fixed height container */}
-      <div className="flex-1 flex overflow-hidden min-h-0">
-        {/* Left Side - Video Player */}
-        <div className="vendor-video-container">
-          <div className="w-full h-full relative max-w-full max-h-full">
-            <video 
-              ref={videoRef} 
-              className="w-full h-full object-cover max-w-full max-h-full" 
-              playsInline 
-              muted 
-              autoPlay 
-            />
-            
-            {/* Stream Info Overlay */}
-            <div className="absolute bottom-4 left-4 bg-black/70 rounded-lg p-3">
-              <div className="flex items-center gap-2 text-white">
-                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                <span className="text-sm font-medium">You are live</span>
-              </div>
+      {/* Main Content */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Video Section */}
+        <div className="flex-1 bg-black relative">
+          <video 
+            ref={videoRef} 
+            className="w-full h-full object-cover"
+            playsInline 
+            muted 
+            autoPlay 
+          />
+          
+          {/* Stream Info Overlay */}
+          <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 rounded-lg p-3">
+            <div className="flex items-center gap-2 text-white">
+              <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium">You are live</span>
             </div>
-
-            {permissionError && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/60 text-white text-sm p-4">
-                {permissionError}
-              </div>
-            )}
           </div>
+
+          {permissionError && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 text-white p-4">
+              <p className="text-center">{permissionError}</p>
+            </div>
+          )}
         </div>
 
-        {/* Right Side - Live Chat - Fixed width to prevent glitching */}
-        <div className="vendor-chat-panel">
+        {/* Chat Section */}
+        <div className="w-80 bg-gray-900 border-l border-gray-700 flex flex-col">
           {/* Chat Header */}
-          <div className="p-4 border-b border-gray-700 flex-shrink-0">
-            <h3 className="text-white font-semibold">Live Chat</h3>
+          <div className="flex-shrink-0 p-4 border-b border-gray-700">
+            <h3 className="text-white font-semibold text-lg">Live Chat</h3>
             <p className="text-gray-400 text-sm">Viewers can chat here</p>
           </div>
 
           {/* Chat Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0" id="vendor-chat-messages">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {messages.map((m) => {
-              const colors = ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-red-500', 'bg-yellow-500', 'bg-pink-500'];
+              const colors = ['#3B82F6', '#10B981', '#8B5CF6', '#EF4444', '#F59E0B', '#EC4899'];
               const colorIndex = m.author.charCodeAt(0) % colors.length;
               
               return (
-                <div key={m.id} className="flex items-start gap-2">
-                  <div className={`w-6 h-6 ${colors[colorIndex]} rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0`}>
+                <div key={m.id} className="flex gap-2">
+                  <div 
+                    className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                    style={{ backgroundColor: colors[colorIndex] }}
+                  >
                     {m.author.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -223,29 +177,28 @@ export default function OngoingLivestreamPage() {
             })}
           </div>
 
-          {/* Chat Input - Vendor can respond */}
-          <div className="p-4 border-t border-gray-700 flex-shrink-0">
+          {/* Chat Input */}
+          <div className="flex-shrink-0 p-4 border-t border-gray-700">
             <div className="flex gap-2">
-              <Input
+              <input
+                type="text"
                 placeholder="Respond to viewers..."
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleSend() }}
-                className="flex-1 bg-gray-800 text-white border-gray-600 focus:border-green-500 focus:outline-none text-sm min-w-0"
+                className="flex-1 bg-gray-800 text-white border border-gray-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
               />
               <Button 
-                onClick={handleSend} 
-                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium flex-shrink-0"
+                onClick={handleSend}
+                size="sm"
+                className="bg-green-600 hover:bg-green-700"
               >
-                Send
+                <Send className="w-4 h-4" />
               </Button>
             </div>
           </div>
         </div>
       </div>
-      </div>
-    </>
+    </div>
   )
 }
-
-
