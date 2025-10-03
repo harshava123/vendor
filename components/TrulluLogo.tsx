@@ -35,7 +35,7 @@ export function TrulluLogo({ size = 'md', variant = 'teal', className = '', show
     },
     teal: {
       bg: 'rgba(20, 184, 166, 0.1)',
-      text: 'text-teal-600'
+      text: 'text-[#98FF98]'
     }
   };
 
@@ -64,7 +64,7 @@ export function TrulluLogo({ size = 'md', variant = 'teal', className = '', show
       {showText && (
         <span 
           className={`font-bold ${textSizeClasses[size]} ${style.text}`}
-          style={{ color: variant === 'light' ? '#ffffff' : '#14b8a6' }}
+          style={{ color: variant === 'light' ? '#ffffff' : '#98FF98' }}
         >
           Trullu
         </span>

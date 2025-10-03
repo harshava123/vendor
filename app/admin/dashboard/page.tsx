@@ -444,7 +444,7 @@ export default function AdminDashboardPage() {
           </div>
           <Dialog open={showAddCategory} onOpenChange={setShowAddCategory}>
             <DialogTrigger asChild>
-            <Button className="text-black" style={{ backgroundColor: '#00FF00' }}>
+            <Button className="text-black" style={{ backgroundColor: '#98FF98' }}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Category
               </Button>
@@ -512,7 +512,7 @@ export default function AdminDashboardPage() {
                   <Button 
                     type="submit" 
                     className="text-black"
-                    style={{ backgroundColor: '#00FF00' }}
+                    style={{ backgroundColor: '#98FF98' }}
                     disabled={categoryLoading}
                   >
                     {categoryLoading ? 'Creating...' : 'Create Category'}
@@ -598,7 +598,7 @@ export default function AdminDashboardPage() {
                 <Button 
                   type="submit" 
                   className="text-black"
-                  style={{ backgroundColor: '#00FF00' }}
+                  style={{ backgroundColor: '#98FF98' }}
                   disabled={categoryLoading}
                 >
                   {categoryLoading ? 'Updating...' : 'Update Category'}
@@ -652,7 +652,7 @@ export default function AdminDashboardPage() {
                         className="p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white hover:scale-110 transition-all duration-200"
                         title="Edit Category"
                       >
-                        <Edit className="h-4 w-4 text-teal-600" />
+                        <Edit className="h-4 w-4" style={{ color: '#98FF98' }} />
                       </button>
                       <button 
                         onClick={() => handleDeleteCategory(category.id)}
@@ -679,7 +679,7 @@ export default function AdminDashboardPage() {
                 {/* Category Content */}
                 <div className="p-4">
                   <div className="mb-3">
-                    <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-teal-600 transition-colors duration-300">
+                    <h3 className="text-lg font-bold text-gray-900 mb-2 transition-colors duration-300" style={{ color: '#98FF98' }}>
                       {category.name}
                     </h3>
                     {category.description && (

@@ -591,7 +591,7 @@ export default function Livestream() {
           <Button 
             onClick={() => setShowCreateModal(true)}
             className="text-black"
-            style={{ backgroundColor: '#00FF00' }}
+            style={{ backgroundColor: '#98FF98' }}
           >
             <Plus className="w-4 h-4 mr-2" />
                 Create Stream for {selectedProduct?.name}
@@ -829,7 +829,7 @@ export default function Livestream() {
                             disabled={streamsLoading}
                             size="sm"
                             className="flex-1 text-black"
-                            style={{ backgroundColor: '#00FF00' }}
+                            style={{ backgroundColor: '#98FF98' }}
                           >
                             <Camera className="w-4 h-4 mr-2" />
                             Start WebRTC Stream
@@ -859,7 +859,7 @@ export default function Livestream() {
             <Button 
               onClick={() => setShowCreateModal(true)}
               className="text-black"
-              style={{ backgroundColor: '#00FF00' }}
+              style={{ backgroundColor: '#98FF98' }}
             >
               <Plus className="w-4 h-4 mr-2" />
                   Create Stream for {selectedProduct?.name}
@@ -900,7 +900,7 @@ export default function Livestream() {
               <Button
                 onClick={() => router.push('/livestream/ongoing')}
                 className="w-full mt-3 text-black text-sm"
-                style={{ backgroundColor: '#00FF00' }}
+                style={{ backgroundColor: '#98FF98' }}
                 size="sm"
               >
                 <Video className="w-4 h-4 mr-2" />
@@ -983,7 +983,7 @@ export default function Livestream() {
                 onClick={createStream}
                 disabled={creatingStream || !newStream.title.trim() || !selectedProduct}
                 className="text-black"
-                style={{ backgroundColor: '#00FF00' }}
+                style={{ backgroundColor: '#98FF98' }}
               >
                 {creatingStream ? "Creating..." : "Create Stream"}
               </Button>

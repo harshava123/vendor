@@ -260,7 +260,7 @@ export default function Login() {
               type="submit"
               disabled={loading}
               className="w-full py-3 text-black font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ backgroundColor: '#00FF00' }}
+              style={{ backgroundColor: '#98FF98' }}
             >
               {loading ? "Signing In..." : "Sign In"}
             </button>
@@ -273,7 +273,7 @@ export default function Login() {
                   type="button"
                   onClick={() => router.push('/register')}
                   className="font-medium hover:underline"
-                  style={{ color: '#00FF00' }}
+                  style={{ color: '#98FF98' }}
                 >
                   Create Account
                 </button>

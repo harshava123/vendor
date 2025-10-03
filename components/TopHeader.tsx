@@ -135,12 +135,12 @@ export function TopHeader({ isMobile = false, onMobileMenuClick }: TopHeaderProp
           </div>
           <div>
             <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{vendorName}</p>
-            <p className="text-xs" style={{ color: '#00FF00' }}>Online</p>
+            <p className="text-xs" style={{ color: '#98FF98' }}>Online</p>
           </div>
           <Button
             variant="ghost"
             className={`cursor-pointer hover:bg-white/10 transition-all duration-300 ${isMobile ? 'hidden sm:flex' : ''}`}
-            style={{ color: '#00FF00' }}
+            style={{ color: '#98FF98' }}
             onClick={handleLogoutClick}
           >
             <LogOut className="h-5 w-5" />

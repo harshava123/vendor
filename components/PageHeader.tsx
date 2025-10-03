@@ -14,7 +14,7 @@ export function PageHeader() {
           className="p-3 rounded-xl"
           style={{ backgroundColor: 'rgba(20, 184, 166, 0.1)' }}
         >
-          <IconComponent className="h-8 w-8" style={{ color: 'var(--primary-teal)' }} />
+          <IconComponent className="h-8 w-8" style={{ color: '#98FF98' }} />
         </div>
         <div>
           <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>

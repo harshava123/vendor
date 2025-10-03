@@ -199,7 +199,7 @@ export function AppSidebar({ isCollapsed, onToggleCollapse, isMobile = false, on
                 href={item.url}
                 className="rounded-lg flex items-center gap-3 px-3 py-2.5 text-sm font-medium transition-all duration-300 whitespace-nowrap hover:shadow-sm"
                 style={{
-                  backgroundColor: activeUrl === item.url ? '#14b8a6' : 'transparent',
+                  backgroundColor: activeUrl === item.url ? '#98FF98' : 'transparent',
                   color: activeUrl === item.url ? 'white' : '#1e293b',
                   justifyContent: 'flex-start'
                 }}

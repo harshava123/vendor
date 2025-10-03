@@ -226,7 +226,7 @@ export default function Products() {
             />
           </div>
            <Link href="/add-product" className="w-full sm:w-auto">
-             <Button className="rounded-md w-full sm:w-auto text-black" style={{ backgroundColor: '#00FF00' }}>
+             <Button className="rounded-md w-full sm:w-auto text-black" style={{ backgroundColor: '#98FF98' }}>
                <Plus className="h-4 w-4 mr-2" /> 
                Add Product
              </Button>

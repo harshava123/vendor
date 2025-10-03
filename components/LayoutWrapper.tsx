@@ -179,7 +179,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
                     onClick={handleAdminLogoutClick}
                     className="p-2 rounded-full hover:bg-white/10 transition-colors duration-200"
                   >
-                    <LogOut className="h-5 w-5" style={{ color: '#00FF00' }} />
+                    <LogOut className="h-5 w-5" style={{ color: '#98FF98' }} />
                   </button>
                 </div>
               </div>

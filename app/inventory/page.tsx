@@ -143,7 +143,7 @@ export default function Inventory() {
             />
           </div>
           <Link href="/add-product">
-            <Button className="rounded-md text-black" style={{ backgroundColor: '#00FF00' }}>
+            <Button className="rounded-md text-black" style={{ backgroundColor: '#98FF98' }}>
               <Plus className="h-4 w-4 mr-2" /> Add Item
             </Button>
           </Link>
@@ -161,7 +161,7 @@ export default function Inventory() {
             {searchQuery ? 'No products found matching your search.' : 'No products found.'}
           </div>
           <Link href="/add-product">
-            <Button className="text-black" style={{ backgroundColor: '#00FF00' }}>
+            <Button className="text-black" style={{ backgroundColor: '#98FF98' }}>
               <Plus className="h-4 w-4 mr-2" /> Add Your First Product
             </Button>
           </Link>

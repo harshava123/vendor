@@ -407,7 +407,7 @@ export default function CategoryProducts() {
           </div>
           <Dialog open={showAddProduct} onOpenChange={setShowAddProduct}>
             <DialogTrigger asChild>
-              <Button className="rounded-md w-full sm:w-auto text-black" style={{ backgroundColor: '#00FF00' }}>
+              <Button className="rounded-md w-full sm:w-auto text-black" style={{ backgroundColor: '#98FF98' }}>
                 <Plus className="h-4 w-4 mr-2" /> Add Product
               </Button>
             </DialogTrigger>
@@ -439,7 +439,7 @@ export default function CategoryProducts() {
                     value={newProduct.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
                     placeholder="Enter product description"
-                    className="w-full p-3 border border-gray-700 rounded-md focus:ring-2 focus:ring-[#00FF00] focus:border-transparent bg-[#0f1115]"
+                    className="w-full p-3 border border-gray-700 rounded-md focus:ring-2 focus:ring-[#98FF98] focus:border-transparent bg-[#0f1115]"
                     rows={3}
                   />
                 </div>
@@ -703,7 +703,7 @@ export default function CategoryProducts() {
                 
                 <div className="flex justify-between items-center mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg font-bold" style={{ color: '#00FF00' }}>
+                    <span className="text-lg font-bold" style={{ color: '#98FF98' }}>
                       ₹{product.discount_price || product.price}
                     </span>
                     {product.discount_price && (
