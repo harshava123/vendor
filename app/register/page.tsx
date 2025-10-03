@@ -129,7 +129,7 @@ export default function Register() {
         } catch (error) {
             toast({
                 title: "Registration Failed",
-                description: error.message || "An error occurred during registration",
+                description: error instanceof Error ? error.message : "An error occurred during registration",
                 variant: "destructive",
             });
             console.error(error);
