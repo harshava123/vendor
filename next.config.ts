@@ -6,19 +6,33 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    domains: [
-      'reportal-media.s3.ap-south-1.amazonaws.com',
-      'trullu-product-images.s3.ap-south-1.amazonaws.com', // AWS S3 bucket for uploads
-      'images.unsplash.com', 
-      'localhost',
-      'bazarapi.elitceler.com', // Backend API domain
-      // Production domains
-      ...(process.env.NODE_ENV === 'production' ? [
-        'your-aws-backend-domain.com',
-        'your-aws-backend-domain.elasticbeanstalk.com',
-        'your-aws-backend-domain.ec2.amazonaws.com'
-      ] : ['localhost'])
-    ].filter(Boolean),
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'reportal-media.s3.ap-south-1.amazonaws.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'trullu-product-images.s3.ap-south-1.amazonaws.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'http',
+        hostname: 'localhost',
+        port: '5000',
+      },
+      {
+        protocol: 'http',
+        hostname: 'bazarapi.elitceler.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'bazarapi.elitceler.com',
+      },
+    ],
   },
   serverExternalPackages: ['@supabase/supabase-js'],
   // Enable static optimization where possible
