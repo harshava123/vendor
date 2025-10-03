@@ -42,6 +42,7 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
 
   const hideSidebar = pathname === "/login" || pathname === '/login/otp' || pathname === '/register';
   const isAdminRoute = pathname.startsWith('/admin');
+  const isLivestreamPage = pathname === '/livestream/ongoing' || pathname === '/admin/livestream/ongoing';
 
   const toggleSidebar = () => {
     if (isMobile) {
@@ -187,10 +188,16 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
           </div>
           
           {/* Scrollable Main Content */}
-          <main className="flex-1 overflow-y-auto overflow-x-hidden p-6" style={{ backgroundColor: 'var(--light-gray)' }}>
-            <div className="modern-card p-6 min-h-full fade-in">
-              {children}
-            </div>
+          <main className={`flex-1 overflow-y-auto overflow-x-hidden ${isLivestreamPage ? 'p-0' : 'p-6'}`} style={{ backgroundColor: 'var(--light-gray)' }}>
+            {isLivestreamPage ? (
+              <div className="h-full">
+                {children}
+              </div>
+            ) : (
+              <div className="modern-card p-6 min-h-full fade-in">
+                {children}
+              </div>
+            )}
           </main>
         </div>
         
@@ -246,10 +253,16 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
             />
           </div>
         )}
-        <main className={`flex-1 overflow-x-hidden p-4 sm:p-6`} style={{ backgroundColor: 'var(--light-gray)' }}>
-          <div className="modern-card p-4 sm:p-6 min-h-full fade-in">
-            {children}
-          </div>
+        <main className={`flex-1 overflow-x-hidden ${isLivestreamPage ? 'p-0' : 'p-4 sm:p-6'}`} style={{ backgroundColor: 'var(--light-gray)' }}>
+          {isLivestreamPage ? (
+            <div className="h-full">
+              {children}
+            </div>
+          ) : (
+            <div className="modern-card p-4 sm:p-6 min-h-full fade-in">
+              {children}
+            </div>
+          )}
         </main>
       </div>
     </div>
