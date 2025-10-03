@@ -11,6 +11,7 @@ const nextConfig: NextConfig = {
       'trullu-product-images.s3.ap-south-1.amazonaws.com', // AWS S3 bucket for uploads
       'images.unsplash.com', 
       'localhost',
+      'bazarapi.elitceler.com', // Backend API domain
       // Production domains
       ...(process.env.NODE_ENV === 'production' ? [
         'your-aws-backend-domain.com',

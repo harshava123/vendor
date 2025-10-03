@@ -84,8 +84,28 @@ export default function Products() {
       if (categoriesResult.success) {
         let categoriesToShow = categoriesResult.data;
         
-        // Show all categories so vendors can add products to any category
-        console.log('📋 Showing all categories for product creation');
+        // Try to fetch vendor's products to filter categories
+        try {
+          const vendorProductsResult = await apiClient.getVendorProducts();
+          console.log('📡 Vendor Products API response:', vendorProductsResult);
+          
+          if (vendorProductsResult.success && vendorProductsResult.data.length > 0) {
+            // Get unique category IDs from vendor's products
+            const vendorCategoryIds = new Set(
+              vendorProductsResult.data.map((product: { category_id: string }) => product.category_id)
+            );
+            
+            // Filter categories to only include those where vendor has products
+            categoriesToShow = categoriesResult.data.filter((category: { id: string }) => 
+              vendorCategoryIds.has(category.id)
+            );
+            console.log('🔒 Filtered to', categoriesToShow.length, 'vendor-specific categories');
+          } else {
+            console.log('📋 No vendor products found, showing all categories');
+          }
+        } catch (vendorError) {
+          console.log('⚠️ Vendor products fetch failed, showing all categories:', vendorError);
+        }
         
         // Transform backend categories to match frontend format
         const transformedCategories: Category[] = categoriesToShow.map((category: { id: string; name: string; is_active: boolean; image?: string; created_at: string; updated_at?: string }) => ({

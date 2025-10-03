@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Search, Eye, Play, Plus, Video, Users, Camera, Mic, ArrowLeft, ArrowRight, Package, Trash2 } from 'lucide-react';
+import { Search, Eye, Plus, Video, Users, Camera, ArrowLeft, ArrowRight, Package, Trash2 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
@@ -140,7 +140,6 @@ export default function Livestream() {
       if (result.success) {
         setCategories(result.data || []);
         console.log('✅ Categories loaded:', result.data?.length || 0);
-        console.log('📋 Categories data:', result.data);
       } else {
         console.error('❌ Failed to fetch categories:', result.message);
         toast({
@@ -941,7 +940,7 @@ export default function Livestream() {
                 Your webcam is live! Viewers can watch in Bazar Story.
               </p>
               <Button
-                onClick={() => router.push(`/livestream/ongoing?streamKey=${currentStream?.stream_key || ''}`)}
+                onClick={() => router.push('/livestream/ongoing')}
                 className="w-full mt-3 text-black text-sm"
                 style={{ backgroundColor: '#98FF98' }}
                 size="sm"

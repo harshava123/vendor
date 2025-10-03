@@ -171,7 +171,7 @@ export default function Inventory() {
           {filteredProducts.map((product) => (
             <div key={product.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow">
               <div className="relative h-48 w-full rounded-t-lg overflow-hidden">
-                {product.images && product.images.length > 0 ? (
+                {product.images && product.images.length > 0 && product.images[0] ? (
                   <Image
                     src={product.images[0]}
                     alt={product.name}

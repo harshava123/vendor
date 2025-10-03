@@ -175,18 +175,11 @@ export default function CategoryProducts() {
 
     setUploadingImages(true);
     try {
-      console.log('🔄 Uploading images:', selectedFiles.length, 'files');
       const response = await apiClient.uploadProductImages(Array.from(selectedFiles));
-      console.log('📡 Upload response:', response);
       
       if (response.success && response.data) {
         // Extract URLs from uploaded files
-        const uploadedUrls = response.data.map((file: { fullUrl: string }) => {
-          console.log('📁 File upload result:', file);
-          return file.fullUrl;
-        });
-        
-        console.log('🔗 Uploaded URLs:', uploadedUrls);
+        const uploadedUrls = response.data.map((file: { fullUrl: string }) => file.fullUrl);
         
         // Add uploaded image URLs to the images array
         setNewProduct(prev => ({
@@ -209,11 +202,10 @@ export default function CategoryProducts() {
         className: "bg-green-500 text-white",
       });
       } else {
-        console.error('❌ Upload failed:', response);
         throw new Error(response.message || 'Failed to upload images');
       }
     } catch (error: unknown) {
-      console.error('❌ Error uploading images:', error);
+      console.error('Error uploading images:', error);
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to upload images",
