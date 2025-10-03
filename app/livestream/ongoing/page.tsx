@@ -64,53 +64,124 @@ export default function OngoingLivestreamPage() {
     router.push('/livestream')
   }
 
+  // Format time ago
+  const formatTimeAgo = (timestamp: number) => {
+    const now = Date.now();
+    const diff = now - timestamp;
+    const minutes = Math.floor(diff / 60000);
+    
+    if (minutes < 1) return 'now';
+    if (minutes === 1) return '1m ago';
+    if (minutes < 60) return `${minutes}m ago`;
+    
+    const hours = Math.floor(minutes / 60);
+    if (hours === 1) return '1h ago';
+    return `${hours}h ago`;
+  };
+
   return (
-    <div className="p-6 min-h-screen flex items-center">
-      <div className="mx-auto max-w-6xl w-full">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-semibold text-center md:text-left">Ongoing Livestream</h1>
-          <Button onClick={handleStop} className="bg-red-500 cursor-pointer hover:bg-red-600 text-white">
-            Stop
+    <div className="fixed inset-0 bg-black z-50 flex flex-col">
+      {/* Header */}
+      <div className="bg-gray-900 px-4 py-3 flex items-center justify-between border-b border-gray-700">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-sm font-semibold">
+            K
+          </div>
+          <div>
+            <h3 className="text-white font-semibold">Your Live Stream</h3>
+            <p className="text-gray-400 text-sm">You are live</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 text-red-500">
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium">LIVE</span>
+          </div>
+          <Button 
+            onClick={handleStop} 
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+          >
+            End Stream
           </Button>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start h-full ">
-          <div className="rounded-lg h-full flex items-center overflow-hidden  relative">
-          <video ref={videoRef} className="max-w-full rounded-lg max-h-full object-cover bg-black" playsInline muted autoPlay />
-          <div className="absolute top-3 left-3 bg-red-500 text-white text-xs px-2 py-1 rounded">LIVE</div>
-          {permissionError && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/60 text-white text-sm p-4">
-              {permissionError}
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left Side - Video Player */}
+        <div className="flex-1 bg-black flex items-center justify-center">
+          <div className="w-full h-full relative">
+            <video 
+              ref={videoRef} 
+              className="w-full h-full object-cover" 
+              playsInline 
+              muted 
+              autoPlay 
+            />
+            
+            {/* Stream Info Overlay */}
+            <div className="absolute bottom-4 left-4 bg-black/70 rounded-lg p-3">
+              <div className="flex items-center gap-2 text-white">
+                <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                <span className="text-sm font-medium">You are live</span>
+              </div>
             </div>
-          )}
+
+            {permissionError && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/60 text-white text-sm p-4">
+                {permissionError}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Right Side - Live Chat */}
+        <div className="w-80 bg-gray-900 border-l border-gray-700 flex flex-col">
+          {/* Chat Header */}
+          <div className="p-4 border-b border-gray-700">
+            <h3 className="text-white font-semibold">Live Chat</h3>
+            <p className="text-gray-400 text-sm">Viewers can chat here</p>
           </div>
 
-          <div className="flex flex-col h-[40rem]  rounded-2xl overflow-hidden">
-            <div className="px-4 py-3 border-b border-neutral-200 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-black text-white flex items-center justify-center text-sm font-semibold">K</div>
-              <div className="font-medium">Karatage Traders</div>
-            </div>
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
-              {messages.map((m) => (
-                <div key={m.id} className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full border border-green-500 text-green-600 flex items-center justify-center text-xs font-semibold">
+          {/* Chat Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-3" id="vendor-chat-messages">
+            {messages.map((m) => {
+              const colors = ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-red-500', 'bg-yellow-500', 'bg-pink-500'];
+              const colorIndex = m.author.charCodeAt(0) % colors.length;
+              
+              return (
+                <div key={m.id} className="flex items-start gap-2">
+                  <div className={`w-6 h-6 ${colors[colorIndex]} rounded-full flex items-center justify-center text-white text-xs font-bold`}>
                     {m.author.charAt(0).toUpperCase()}
                   </div>
-                  <div className="text-sm leading-5">
-                    <span className="font-semibold mr-1">{m.author}</span>
-                    <span className="text-neutral-700">: {m.text}</span>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-white text-sm font-medium">{m.author}</span>
+                      <span className="text-gray-400 text-xs">{formatTimeAgo(m.at)}</span>
+                    </div>
+                    <p className="text-gray-300 text-sm">{m.text}</p>
                   </div>
                 </div>
-              ))}
-            </div>
-            <div className="p-3 border-t border-neutral-200 flex gap-2">
+              );
+            })}
+          </div>
+
+          {/* Chat Input - Vendor can respond */}
+          <div className="p-4 border-t border-gray-700">
+            <div className="flex gap-2">
               <Input
-                placeholder="Type your comment"
+                placeholder="Respond to viewers..."
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleSend() }}
-                className="rounded-xl border-red-300 focus-visible:ring-0 focus:border-red-400"
+                className="flex-1 bg-gray-800 text-white border-gray-600 focus:border-green-500 focus:outline-none text-sm"
               />
-              <Button onClick={handleSend} className="rounded-xl">Send</Button>
+              <Button 
+                onClick={handleSend} 
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+              >
+                Send
+              </Button>
             </div>
           </div>
         </div>

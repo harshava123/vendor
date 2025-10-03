@@ -374,7 +374,7 @@ export default function Livestream() {
     if (stream.status === 'live' && stream.is_active_webrtc) {
       toast({
         title: "Stream Already Live",
-        description: "This WebRTC stream is already active",
+        description: "This Live Shopping stream is already active",
         variant: "default",
       });
       return;
@@ -404,7 +404,7 @@ export default function Livestream() {
         }
 
         toast({
-          title: "🎥 WebRTC Stream Started!",
+          title: "🎥 Live Shopping Stream Started!",
           description: "Your webcam is now live! Viewers can watch in Bazar Story.",
           variant: "default",
           className: "bg-green-500 text-white",
@@ -425,7 +425,7 @@ export default function Livestream() {
 
         toast({
           title: "Stream Ended",
-          description: "WebRTC stream has been stopped",
+          description: " Live Shopping stream has been stopped",
           className: "bg-orange-500 text-white",
         });
       });
@@ -433,7 +433,7 @@ export default function Livestream() {
       streamer.setOnError((error: any) => {
         console.error('WebRTC Stream error:', error);
         toast({
-          title: "WebRTC Stream Error",
+          title: "Live Shopping Stream Error",
           description: error.includes('namespace') 
             ? "Connection error. Please check if the backend server is running on port 5000."
             : error,
@@ -459,8 +459,8 @@ export default function Livestream() {
     } catch (error) {
       console.error('Start WebRTC stream error:', error);
       toast({
-        title: "WebRTC Stream Error",
-        description: "Failed to start WebRTC stream. Please ensure your browser supports WebRTC and you have granted camera/microphone permissions.",
+        title: "Live Shopping Stream Error",
+        description: "Failed to start Live Shopping stream. Please ensure your browser supports Live Shopping and you have granted camera/microphone permissions.",
         variant: "destructive",
       });
     } finally {
@@ -478,7 +478,7 @@ export default function Livestream() {
       if (result.success) {
         toast({
           title: "Success",
-            description: "WebRTC livestream ended successfully",
+            description: "Live Shopping livestream ended successfully",
             className: "bg-orange-500 text-white",
           });
         }
@@ -615,14 +615,14 @@ export default function Livestream() {
           )}
         </div>
 
-        {/* WebRTC Status Banner */}
+        {/* Live Shopping Stream Status Banner */}
         {isWebRTCStreaming && (
           <div className="mb-6 p-4 bg-green-100 border border-green-200 rounded-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse mr-3"></div>
                 <span className="text-green-800 font-medium">
-                  WebRTC Stream Active: {currentStream?.title}
+                  Live Shopping Stream Active: {currentStream?.title}
                   </span>
                 </div>
               <div className="flex items-center gap-4">
@@ -787,7 +787,7 @@ export default function Livestream() {
                           {stream.is_active_webrtc ? (
                             <div className="flex items-center gap-1">
                               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                              <span className="text-xs text-green-500 font-medium">WebRTC Live</span>
+                              <span className="text-xs text-green-500 font-medium">  Live Shopping Stream</span>
                             </div>
                           ) : (
                             <span className="text-xs capitalize" style={{ color: 'var(--text-secondary)' }}>{stream.status}</span>
@@ -807,7 +807,7 @@ export default function Livestream() {
                           </div>
                           <div className="flex items-center gap-1">
                             <Video className="w-4 h-4" />
-                            <span>WebRTC</span>
+                            <span>Live Shopping Stream</span>
                           </div>
                         </div>
                         <span>{new Date(stream.created_at).toLocaleDateString()}</span>
@@ -832,7 +832,7 @@ export default function Livestream() {
                             style={{ backgroundColor: '#98FF98' }}
                           >
                             <Camera className="w-4 h-4 mr-2" />
-                            Start WebRTC Stream
+                            Start Live Shopping Stream
                     </Button>
                   )}
                     <Button
@@ -869,7 +869,7 @@ export default function Livestream() {
           </>
         )}
 
-        {/* WebRTC Video Preview */}
+        {/* Live Shopping Stream Video Preview */}
         {showVideoPreview && localVideoStream && (
           <div className="fixed bottom-4 right-4 z-50">
             <div className="bg-white rounded-lg shadow-lg p-4 max-w-sm">
@@ -916,7 +916,7 @@ export default function Livestream() {
             <DialogHeader>
               <DialogTitle>Create Product Livestream</DialogTitle>
               <DialogDescription>
-                Create a WebRTC livestream for {selectedProduct?.name}
+                Create a live shopping stream for {selectedProduct?.name}
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
