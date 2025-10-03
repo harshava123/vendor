@@ -140,6 +140,7 @@ export default function Livestream() {
       if (result.success) {
         setCategories(result.data || []);
         console.log('✅ Categories loaded:', result.data?.length || 0);
+        console.log('📋 Categories data:', result.data);
       } else {
         console.error('❌ Failed to fetch categories:', result.message);
         toast({
@@ -763,7 +764,7 @@ export default function Livestream() {
                     <div className="p-6">
                       <div className="flex items-center gap-4 mb-4">
                         <div className="w-16 h-16 rounded-lg flex items-center justify-center overflow-hidden" style={{ backgroundColor: '#151922' }}>
-                          {product.images && product.images.length > 0 ? (
+                          {product.images && product.images.length > 0 && product.images[0] ? (
                             <Image
                               src={product.images[0]}
                               alt={product.name}
