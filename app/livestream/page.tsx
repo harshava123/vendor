@@ -283,7 +283,7 @@ export default function Livestream() {
       const streamTitle = `${newStream.title} - ${selectedProduct.name}`;
       const streamDescription = `${newStream.description || ''}\n\nProduct: ${selectedProduct.name}\nPrice: ₹${selectedProduct.discount_price || selectedProduct.price}`.trim();
       
-      const result = await apiClient.createLivestream(streamTitle, streamDescription, selectedProduct.id);
+      const result = await apiClient.createLivestream(streamTitle, streamDescription, selectedProduct.id as any);
       if (result.success) {
         toast({
           title: "Success",
