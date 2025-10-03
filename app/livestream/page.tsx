@@ -387,11 +387,11 @@ export default function Livestream() {
       await streamer.initialize();
 
       // Set up event handlers
-      streamer.setOnViewerCountChange((count) => {
+      streamer.setOnViewerCountChange((count: number) => {
         setViewerCount(count);
       });
 
-      streamer.setOnStreamStart((data) => {
+      streamer.setOnStreamStart((data: any) => {
         setIsWebRTCStreaming(true);
         setCurrentStream(stream);
         setWebrtcStreamer(streamer);
@@ -430,7 +430,7 @@ export default function Livestream() {
         });
       });
 
-      streamer.setOnError((error) => {
+      streamer.setOnError((error: any) => {
         console.error('WebRTC Stream error:', error);
         toast({
           title: "WebRTC Stream Error",
@@ -888,7 +888,7 @@ export default function Livestream() {
                 muted
                 playsInline
                 className="w-full h-48 bg-black rounded"
-                ref={(video) => {
+                ref={(video: HTMLVideoElement | null) => {
                   if (video && localVideoStream) {
                     video.srcObject = localVideoStream;
                   }
