@@ -1,12 +1,14 @@
 "use client"
 import { useEffect, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Radio, Send, Square } from 'lucide-react'
+import { apiClient } from '@/lib/api'
+import { toast } from '@/hooks/use-toast'
 
 export default function OngoingLivestreamPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const startedRef = useRef<boolean>(false)
@@ -16,6 +18,10 @@ export default function OngoingLivestreamPage() {
     { id: 'm2', author: 'Nithin', text: 'Interested', at: Date.now() - 45000 },
   ])
   const [draft, setDraft] = useState("")
+  const [isEnding, setIsEnding] = useState(false)
+  
+  // Get stream key from URL
+  const streamKey = searchParams.get('streamKey')
 
   useEffect(() => {
     const start = async () => {
@@ -63,11 +69,56 @@ export default function OngoingLivestreamPage() {
     setDraft("")
   }
 
-  const handleStop = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop())
+  const handleStop = async () => {
+    if (isEnding) return; // Prevent multiple calls
+    
+    setIsEnding(true);
+    
+    try {
+      // Stop local media stream
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop())
+      }
+      
+      // End stream on backend if we have a stream key
+      if (streamKey) {
+        console.log('🛑 Ending stream with key:', streamKey);
+        const result = await apiClient.endLivestream(streamKey);
+        
+        if (result.success) {
+          toast({
+            title: "Stream Ended",
+            description: "Your livestream has been ended successfully",
+            className: "bg-green-500 text-white",
+          });
+        } else {
+          console.error('❌ Failed to end stream on backend:', result);
+          toast({
+            title: "Warning",
+            description: "Stream ended locally but may still be active on the server",
+            variant: "destructive",
+          });
+        }
+      } else {
+        console.warn('⚠️ No stream key available, only stopping local stream');
+        toast({
+          title: "Stream Ended",
+          description: "Local stream ended (no stream key found)",
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      console.error('❌ Error ending stream:', error);
+      toast({
+        title: "Error",
+        description: "Failed to end stream properly",
+        variant: "destructive",
+      });
+    } finally {
+      setIsEnding(false);
+      // Navigate back to livestream page
+      router.push('/livestream');
     }
-    router.push('/livestream')
   }
 
   const formatTimeAgo = (timestamp: number) => {
@@ -108,9 +159,10 @@ export default function OngoingLivestreamPage() {
               variant="destructive"
               size="sm"
               className="bg-red-600 hover:bg-red-700"
+              disabled={isEnding}
             >
               <Square className="w-4 h-4 mr-2" />
-              End Stream
+              {isEnding ? 'Ending...' : 'End Stream'}
             </Button>
           </div>
         </div>

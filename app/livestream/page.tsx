@@ -194,7 +194,7 @@ export default function Livestream() {
   const fetchLivestreams = async () => {
     try {
       setStreamsLoading(true);
-      console.log('🔄 Fetching livestreams for product:', selectedProduct?.id);
+      console.log('🔄 Fetching livestreams for product:', selectedProduct?.id, selectedProduct?.name);
       
       // Only fetch streams if we have a selected product
       if (!selectedProduct) {
@@ -205,10 +205,19 @@ export default function Livestream() {
       
       const result = await apiClient.getVendorLivestreams(selectedProduct?.id ? selectedProduct.id : (null as any));
       console.log('📡 API Response:', result);
+      console.log('📡 Raw data:', result.data);
       
       if (result.success) {
-        setStreams(result.data || []);
-        console.log('✅ Streams loaded for product:', result.data?.length || 0);
+        const streams = result.data || [];
+        console.log('✅ Streams loaded for product:', streams.length);
+        console.log('📋 Stream details:', streams.map((s: any) => ({ 
+          id: s.id, 
+          title: s.title, 
+          product_id: s.product_id, 
+          status: s.status,
+          created_at: s.created_at 
+        })));
+        setStreams(streams);
       } else {
         console.error('❌ API Error:', result);
         toast({
@@ -280,8 +289,23 @@ export default function Livestream() {
 
     setCreatingStream(true);
     try {
+      // Check if user is authenticated
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to create a livestream",
+          variant: "destructive",
+        });
+        setCreatingStream(false);
+        return;
+      }
+
       const streamTitle = `${newStream.title} - ${selectedProduct.name}`;
       const streamDescription = `${newStream.description || ''}\n\nProduct: ${selectedProduct.name}\nPrice: ₹${selectedProduct.discount_price || selectedProduct.price}`.trim();
+      
+      console.log('🎥 Creating livestream with:', { streamTitle, streamDescription, productId: selectedProduct.id });
+      console.log('🔑 Auth token exists:', !!token);
       
       const result = await apiClient.createLivestream(streamTitle, streamDescription, selectedProduct.id as any);
       if (result.success) {
@@ -292,7 +316,10 @@ export default function Livestream() {
         });
         setShowCreateModal(false);
         setNewStream({ title: '', description: '' });
-        fetchLivestreams();
+        // Add a small delay to ensure the database is updated
+        setTimeout(() => {
+          fetchLivestreams();
+        }, 1000);
       } else {
         toast({
           title: "Error",
@@ -302,11 +329,26 @@ export default function Livestream() {
       }
     } catch (error) {
       console.error('Create stream error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to create stream",
-        variant: "destructive",
-      });
+      const errorMessage = error instanceof Error ? error.message : "Failed to create stream";
+      
+      // Check if it's an authentication error
+      if (errorMessage.includes('Invalid token') || errorMessage.includes('401')) {
+        toast({
+          title: "Authentication Error",
+          description: "Your session has expired. Please log in again.",
+          variant: "destructive",
+        });
+        // Clear the invalid token
+        localStorage.removeItem('authToken');
+        // Redirect to login
+        window.location.href = '/login';
+      } else {
+        toast({
+          title: "Error",
+          description: errorMessage,
+          variant: "destructive",
+        });
+      }
     } finally {
       setCreatingStream(false);
     }
@@ -898,7 +940,7 @@ export default function Livestream() {
                 Your webcam is live! Viewers can watch in Bazar Story.
               </p>
               <Button
-                onClick={() => router.push('/livestream/ongoing')}
+                onClick={() => router.push(`/livestream/ongoing?streamKey=${currentStream?.stream_key || ''}`)}
                 className="w-full mt-3 text-black text-sm"
                 style={{ backgroundColor: '#98FF98' }}
                 size="sm"
