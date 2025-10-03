@@ -203,7 +203,7 @@ export default function Livestream() {
         return;
       }
       
-      const result = await apiClient.getVendorLivestreams(selectedProduct?.id ? selectedProduct.id : null);
+      const result = await apiClient.getVendorLivestreams(selectedProduct?.id ? selectedProduct.id : (null as any));
       console.log('📡 API Response:', result);
       
       if (result.success) {
