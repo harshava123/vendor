@@ -14,6 +14,63 @@ interface AppSidebarProps {
   onMobileClose?: () => void;
 }
 
+// Function to get tab info for PageHeader
+export function getTabInfo(pathname: string) {
+  const items = [
+    {
+      title: "Dashboard",
+      url: "/",
+      icon: LayoutGrid,
+      description: "Overview of your vendor dashboard"
+    },
+    {
+      title: "Products",
+      url: "/products",
+      icon: Package,
+      description: "Manage your product catalog"
+    },
+    {
+      title: "Orders",
+      url: "/orders",
+      icon: ArrowLeftRight,
+      description: "View and manage customer orders"
+    },
+    {
+      title: "Livestream",
+      url: "/livestream",
+      icon: Video,
+      description: "Start live product demonstrations"
+    },
+    {
+      title: "Users",
+      url: "/users",
+      icon: Users,
+      description: "Manage customer accounts"
+    },
+    {
+      title: "Promotion banners",
+      url: "/addBanners",
+      icon: ImageIcon,
+      description: "Create and manage promotional content"
+    },
+    {
+      title: "Profile",
+      url: "/profile",
+      icon: UserCircle,
+      description: "Manage your vendor profile"
+    },
+  ];
+
+  const item = items.find(item => pathname === item.url || pathname.startsWith(item.url + '/'));
+  
+  return item || {
+    title: "Page",
+    url: pathname,
+    icon: LayoutGrid,
+    description: "Vendor admin page"
+  };
+}
+
 export function AppSidebar({ isCollapsed, onToggleCollapse, isMobile = false, onMobileClose }: AppSidebarProps) {
   const [activeUrl, setActiveUrl] = useState<string>("")
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
