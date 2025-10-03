@@ -175,11 +175,18 @@ export default function CategoryProducts() {
 
     setUploadingImages(true);
     try {
+      console.log('🔄 Uploading images:', selectedFiles.length, 'files');
       const response = await apiClient.uploadProductImages(Array.from(selectedFiles));
+      console.log('📡 Upload response:', response);
       
       if (response.success && response.data) {
         // Extract URLs from uploaded files
-        const uploadedUrls = response.data.map((file: { fullUrl: string }) => file.fullUrl);
+        const uploadedUrls = response.data.map((file: { fullUrl: string }) => {
+          console.log('📁 File upload result:', file);
+          return file.fullUrl;
+        });
+        
+        console.log('🔗 Uploaded URLs:', uploadedUrls);
         
         // Add uploaded image URLs to the images array
         setNewProduct(prev => ({
@@ -202,10 +209,11 @@ export default function CategoryProducts() {
         className: "bg-green-500 text-white",
       });
       } else {
+        console.error('❌ Upload failed:', response);
         throw new Error(response.message || 'Failed to upload images');
       }
     } catch (error: unknown) {
-      console.error('Error uploading images:', error);
+      console.error('❌ Error uploading images:', error);
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to upload images",
@@ -675,7 +683,7 @@ export default function CategoryProducts() {
           {filteredProducts.map((product) => (
             <div key={product.id} className="rounded-lg shadow-sm hover:shadow-md transition-shadow" style={{ backgroundColor: 'var(--card-bg)' }}>
               <div className="relative h-48 w-full rounded-t-lg overflow-hidden">
-                {product.images && product.images.length > 0 ? (
+                {product.images && product.images.length > 0 && product.images[0] ? (
               <Image
                     src={product.images[0]}
                     alt={product.name}
