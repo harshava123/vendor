@@ -141,7 +141,7 @@ export function AdminSidebar({ isCollapsed, onToggleCollapse, isMobile = false, 
                 }`}
                 style={{
                   backgroundColor: activeUrl === item.url 
-                    ? 'var(--primary-teal)' 
+                    ? '#98FF98' 
                     : 'transparent',
                   color: activeUrl === item.url 
                     ? 'white' 

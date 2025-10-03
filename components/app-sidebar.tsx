@@ -300,7 +300,7 @@ export function AppSidebar({ isCollapsed, onToggleCollapse, isMobile = false, on
                 `}
                 style={{
                   backgroundColor: activeUrl === item.url 
-                    ? 'var(--primary-teal)' 
+                    ? '#98FF98' 
                     : 'transparent',
                   color: activeUrl === item.url 
                     ? 'white' 

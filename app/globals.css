@@ -10,8 +10,8 @@
 
 /* Modern Admin Theme Variables */
 :root {
-  --primary-teal: #00FF00; /* Brand green */
-  --primary-teal-dark: #00cc00;
+  --primary-teal: #98FF98; /* Brand green */
+  --primary-teal-dark: #7ae67a;
   --light-gray: #0b0b0b; /* Dark background */
   --card-bg: #111318; /* Dark card */
   --sidebar-bg: #0f1115;
@@ -111,7 +111,7 @@ html, body {
 .modern-input:focus {
   outline: none;
   border-color: var(--primary-teal);
-  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+  box-shadow: 0 0 0 3px rgba(152, 255, 152, 0.1);
 }
 
 /* Search Bar Styles */
@@ -128,7 +128,7 @@ html, body {
 
 .search-bar:focus-within {
   border-color: var(--primary-teal);
-  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+  box-shadow: 0 0 0 3px rgba(152, 255, 152, 0.1);
 }
 
 /* Gradient Backgrounds */
