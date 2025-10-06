@@ -183,11 +183,31 @@ export default function CategoryProducts() {
       console.log('[Vendor] Upload response (/upload/product):', response);
 
       if (response.success && Array.isArray(response.data)) {
-        // Prefer fullUrl; fallback to url, Location, imageData; filter invalid
+        // Prefer known keys; then heuristically pick the first string URL-like field
+        const pickUrl = (item: Record<string, unknown>): string => {
+          const candidates: (unknown)[] = [
+            (item as { fullUrl?: unknown }).fullUrl,
+            (item as { url?: unknown }).url,
+            (item as { Location?: unknown }).Location,
+            (item as { imageData?: unknown }).imageData,
+          ];
+          const normalized = candidates
+            .map((v) => (typeof v === 'string' ? v.trim() : ''))
+            .filter((v) => v);
+          if (normalized.length > 0) return normalized[0] as string;
+          // Fallback: scan any string-looking field for an http(s) URL
+          for (const key of Object.keys(item || {})) {
+            const val = (item as Record<string, unknown>)[key];
+            if (typeof val === 'string') {
+              const s = val.trim();
+              if (/^https?:\/\//i.test(s)) return s;
+            }
+          }
+          return '';
+        };
+
         const uploadedUrls = response.data
-          .map((file: { fullUrl?: string | null; url?: string | null; Location?: string | null; imageData?: string | null }) => {
-            return file?.fullUrl || file?.url || file?.Location || file?.imageData || '';
-          })
+          .map((file: Record<string, unknown>) => pickUrl(file))
           .map((u: string) => (typeof u === 'string' ? u.trim() : ''))
           .filter((u: string) => u !== '' && !u.includes('/uploads/undefined'));
 
