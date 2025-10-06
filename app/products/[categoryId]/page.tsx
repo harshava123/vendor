@@ -180,6 +180,7 @@ export default function CategoryProducts() {
     setUploadingImages(true);
     try {
       const response = await apiClient.uploadProductImages(Array.from(selectedFiles));
+      console.log('[Vendor] Upload response (/upload/product):', response);
       
       if (response.success && response.data) {
         // Extract URLs from uploaded files
@@ -190,6 +191,7 @@ export default function CategoryProducts() {
         ...prev,
           images: [...prev.images.filter((img) => normalizeString(img) !== ''), ...uploadedUrls]
         }));
+        console.log('[Vendor] Updated newProduct.images after upload:', uploadedUrls);
         
         // Clear selected files and previews
         setSelectedFiles(null);
@@ -266,7 +268,9 @@ export default function CategoryProducts() {
         colors: newProduct.colors.filter((color) => normalizeString(color) !== '')
       };
 
+      console.log('[Vendor] Create product payload.images:', payload.images);
       const response = await apiClient.createProduct(payload);
+      console.log('[Vendor] Create product response:', response);
       
       if (response.success) {
       toast({

@@ -145,7 +145,9 @@ export default function AddProduct() {
       const token = localStorage.getItem('authToken');
       console.log('🔑 Auth token exists:', !!token);
       
+      console.log('[Vendor] Create product payload.images:', payload.images);
       const response = await apiClient.createProduct(payload);
+      console.log('[Vendor] Create product response:', response);
       console.log('📡 Product creation response:', response);
       
       if (response.success) {
