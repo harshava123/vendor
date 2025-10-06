@@ -36,6 +36,10 @@ export default function AdminCategoriesPage() {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
+  const normalizeString = (value: unknown): string => {
+    return typeof value === 'string' ? value.trim() : '';
+  };
+
   useEffect(() => {
     const adminToken = adminApiClient.getAdminToken?.() || localStorage.getItem('adminToken');
     const adminEmail = typeof window !== 'undefined' ? localStorage.getItem('adminEmail') : null;
@@ -74,7 +78,7 @@ export default function AdminCategoriesPage() {
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!newCategory.name.trim()) {
+    if (!normalizeString(newCategory.name)) {
       toast({
         title: "Error",
         description: "Category name is required.",
@@ -188,7 +192,7 @@ export default function AdminCategoriesPage() {
   const handleUpdateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!editingCategory || !newCategory.name.trim()) {
+    if (!editingCategory || !normalizeString(newCategory.name)) {
       toast({
         title: "Error",
         description: "Category name is required.",

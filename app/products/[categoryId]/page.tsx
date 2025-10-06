@@ -66,6 +66,10 @@ export default function CategoryProducts() {
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
+  const normalizeString = (value: unknown): string => {
+    return typeof value === 'string' ? value.trim() : '';
+  };
+
   const fetchCategoryAndProducts = useCallback(async () => {
     try {
       setLoading(true);
@@ -184,7 +188,7 @@ export default function CategoryProducts() {
         // Add uploaded image URLs to the images array
         setNewProduct(prev => ({
         ...prev,
-          images: [...prev.images.filter(img => img.trim() !== ''), ...uploadedUrls]
+          images: [...prev.images.filter((img) => normalizeString(img) !== ''), ...uploadedUrls]
         }));
         
         // Clear selected files and previews
@@ -257,9 +261,9 @@ export default function CategoryProducts() {
         discount_price: newProduct.discount_price ? parseFloat(newProduct.discount_price) : null,
         stock_quantity: parseInt(newProduct.stock_quantity) || 0,
         min_order_quantity: parseInt(newProduct.min_order_quantity) || 1,
-        images: newProduct.images.filter(img => img.trim() !== ''),
-        sizes: newProduct.sizes.filter(size => size.trim() !== ''),
-        colors: newProduct.colors.filter(color => color.trim() !== '')
+        images: newProduct.images.filter((img) => normalizeString(img) !== ''),
+        sizes: newProduct.sizes.filter((size) => normalizeString(size) !== ''),
+        colors: newProduct.colors.filter((color) => normalizeString(color) !== '')
       };
 
       const response = await apiClient.createProduct(payload);
@@ -358,10 +362,12 @@ export default function CategoryProducts() {
     }
   };
 
-  const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProducts = products.filter((product) => {
+    const name = (product.name || '').toLowerCase();
+    const description = (product.description || '').toLowerCase();
+    const query = (searchQuery || '').toLowerCase();
+    return name.includes(query) || description.includes(query);
+  });
 
   if (loading) {
     return (
@@ -557,11 +563,11 @@ export default function CategoryProducts() {
                   </div>
                   
                   {/* Current Images Display */}
-                  {newProduct.images.filter(img => img.trim() !== '').length > 0 && (
+                  {newProduct.images.filter((img) => normalizeString(img) !== '').length > 0 && (
                     <div className="mb-4">
                       <h4 className="text-sm font-medium mb-2">Current Images:</h4>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {newProduct.images.filter(img => img.trim() !== '').map((image, index) => (
+                        {newProduct.images.filter((img) => normalizeString(img) !== '').map((image, index) => (
                           <div key={index} className="relative">
                             <Image
                               src={image}

@@ -71,7 +71,7 @@ export default function Livestream() {
   const [streams, setStreams] = useState<WebRTCStream[]>([]);
   
   // Loading states
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   const [productsLoading, setProductsLoading] = useState(false);
   const [streamsLoading, setStreamsLoading] = useState(false);
@@ -84,6 +84,16 @@ export default function Livestream() {
     title: '',
     description: ''
   });
+
+  const normalizeString = (value: unknown): string => {
+    return typeof value === 'string' ? value.trim() : '';
+  };
+
+  interface ApiResponse<T> { success: boolean; data?: T; message?: string }
+  interface ApiClientForLivestream {
+    createLivestream: (title: string, description: string, product_id?: string | null) => Promise<ApiResponse<unknown>>;
+    getVendorLivestreams: (product_id?: string | null) => Promise<ApiResponse<WebRTCStream[]>>;
+  }
   
   // Authentication state
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -203,14 +213,15 @@ export default function Livestream() {
         return;
       }
       
-      const result = await apiClient.getVendorLivestreams(selectedProduct?.id ? selectedProduct.id : (null as any));
+      const ac = apiClient as unknown as ApiClientForLivestream;
+      const result = await ac.getVendorLivestreams(selectedProduct.id);
       console.log('📡 API Response:', result);
       console.log('📡 Raw data:', result.data);
       
       if (result.success) {
-        const streams = result.data || [];
+        const streams = (result.data || []) as WebRTCStream[];
         console.log('✅ Streams loaded for product:', streams.length);
-        console.log('📋 Stream details:', streams.map((s: any) => ({ 
+        console.log('📋 Stream details:', streams.map((s: WebRTCStream) => ({ 
           id: s.id, 
           title: s.title, 
           product_id: s.product_id, 
@@ -269,7 +280,7 @@ export default function Livestream() {
   };
 
   const createStream = async () => {
-    if (!newStream.title.trim()) {
+    if (!normalizeString(newStream.title)) {
       toast({
         title: "Validation Error",
         description: "Please enter a stream title",
@@ -301,13 +312,14 @@ export default function Livestream() {
         return;
       }
 
-      const streamTitle = `${newStream.title} - ${selectedProduct.name}`;
-      const streamDescription = `${newStream.description || ''}\n\nProduct: ${selectedProduct.name}\nPrice: ₹${selectedProduct.discount_price || selectedProduct.price}`.trim();
+      const streamTitle = `${normalizeString(newStream.title)} - ${selectedProduct.name}`;
+      const streamDescription = normalizeString(`${newStream.description || ''}\n\nProduct: ${selectedProduct.name}\nPrice: ₹${selectedProduct.discount_price || selectedProduct.price}`);
       
       console.log('🎥 Creating livestream with:', { streamTitle, streamDescription, productId: selectedProduct.id });
       console.log('🔑 Auth token exists:', !!token);
       
-      const result = await apiClient.createLivestream(streamTitle, streamDescription, selectedProduct.id as any);
+      const ac = apiClient as unknown as ApiClientForLivestream;
+      const result = await ac.createLivestream(streamTitle, streamDescription, selectedProduct.id);
       if (result.success) {
         toast({
           title: "Success",
@@ -433,7 +445,7 @@ export default function Livestream() {
         setViewerCount(count);
       });
 
-      streamer.setOnStreamStart((data: any) => {
+      streamer.setOnStreamStart(() => {
         setIsWebRTCStreaming(true);
         setCurrentStream(stream);
         setWebrtcStreamer(streamer);
@@ -472,13 +484,14 @@ export default function Livestream() {
         });
       });
 
-      streamer.setOnError((error: any) => {
-        console.error('WebRTC Stream error:', error);
+      streamer.setOnError((error: unknown) => {
+        const message = typeof error === 'string' ? error : (error as Error)?.message || 'Unknown error';
+        console.error('WebRTC Stream error:', message);
         toast({
           title: "Live Shopping Stream Error",
-          description: error.includes('namespace') 
+          description: message.includes('namespace') 
             ? "Connection error. Please check if the backend server is running on port 5000."
-            : error,
+            : message,
           variant: "destructive",
         });
       });
@@ -548,8 +561,8 @@ export default function Livestream() {
   );
 
   const filteredProducts = products.filter(product =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.description.toLowerCase().includes(searchQuery.toLowerCase())
+    (product.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()) ||
+    (product.description || '').toLowerCase().includes((searchQuery || '').toLowerCase())
   );
 
   if (authLoading || !isAuthenticated) {
@@ -998,7 +1011,7 @@ export default function Livestream() {
                   onChange={(e) => setNewStream({ ...newStream, title: e.target.value })}
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  This will be prefixed with "{selectedProduct?.name} - "
+                  This will be prefixed with &quot;{selectedProduct?.name} - &quot;
                 </p>
               </div>
               <div>
@@ -1023,7 +1036,7 @@ export default function Livestream() {
               </Button>
               <Button
                 onClick={createStream}
-                disabled={creatingStream || !newStream.title.trim() || !selectedProduct}
+                disabled={creatingStream || !normalizeString(newStream.title) || !selectedProduct}
                 className="text-black"
                 style={{ backgroundColor: '#98FF98' }}
               >

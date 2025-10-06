@@ -34,6 +34,10 @@ export default function AddProduct() {
     is_featured: false
   });
 
+  const normalizeString = (value: unknown): string => {
+    return typeof value === 'string' ? value.trim() : '';
+  };
+
   useEffect(() => {
     checkAuthentication();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -132,9 +136,9 @@ export default function AddProduct() {
         discount_price: productData.discount_price ? parseFloat(productData.discount_price) : null,
         stock_quantity: parseInt(productData.stock_quantity) || 0,
         min_order_quantity: parseInt(productData.min_order_quantity) || 1,
-        images: productData.images.filter(img => img.trim() !== ''),
-        sizes: productData.sizes.filter(size => size.trim() !== ''),
-        colors: productData.colors.filter(color => color.trim() !== '')
+        images: productData.images.filter((img) => normalizeString(img) !== ''),
+        sizes: productData.sizes.filter((size) => normalizeString(size) !== ''),
+        colors: productData.colors.filter((color) => normalizeString(color) !== '')
       };
 
       console.log('🚀 Submitting product with payload:', payload);

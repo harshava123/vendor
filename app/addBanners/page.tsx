@@ -17,6 +17,9 @@ export default function AddBanners() {
   const router = useRouter()
   const [file, setFile] = useState<File | null>(null)
   const [bannerTitle, setBannerTitle] = useState('')
+  const normalizeString = (value: unknown): string => {
+    return typeof value === 'string' ? value.trim() : '';
+  }
   const [isDragging, setIsDragging] = useState(false)
   const [ads, setAds] = useState<Ad[]>([])
   const { toast } = useToast()
@@ -120,7 +123,7 @@ export default function AddBanners() {
   }
 
   const handleUpload = async () => {
-    if (!file || !bannerTitle.trim()) {
+    if (!file || !normalizeString(bannerTitle)) {
       toast({
         variant: "destructive",
         title: "Error",
@@ -223,7 +226,7 @@ export default function AddBanners() {
             variant="destructive" 
             className="bg-[#4361EE] hover:bg-[#3451DE] text-white w-40 "
             onClick={handleUpload}
-            disabled={!bannerTitle.trim()}
+            disabled={!normalizeString(bannerTitle)}
           >
             Upload Banner
           </Button>
