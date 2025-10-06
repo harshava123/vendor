@@ -181,32 +181,43 @@ export default function CategoryProducts() {
     try {
       const response = await apiClient.uploadProductImages(Array.from(selectedFiles));
       console.log('[Vendor] Upload response (/upload/product):', response);
-      
-      if (response.success && response.data) {
-        // Extract URLs from uploaded files
-        const uploadedUrls = response.data.map((file: { fullUrl: string }) => file.fullUrl);
-        
+
+      if (response.success && Array.isArray(response.data)) {
+        // Prefer fullUrl; fallback to url; filter invalid
+        const uploadedUrls = response.data
+          .map((file: { fullUrl?: string | null; url?: string | null }) => file?.fullUrl || file?.url || '')
+          .map((u: string) => (typeof u === 'string' ? u.trim() : ''))
+          .filter((u: string) => u !== '' && !u.includes('/uploads/undefined'));
+
+        if (uploadedUrls.length === 0) {
+          console.warn('[Vendor] No valid S3 URLs returned from upload. Raw data:', response.data);
+          throw new Error('Upload returned no valid image URLs. Please retry or contact support.');
+        }
+
         // Add uploaded image URLs to the images array
         setNewProduct(prev => ({
-        ...prev,
-          images: [...prev.images.filter((img) => normalizeString(img) !== ''), ...uploadedUrls]
+          ...prev,
+          images: [
+            ...prev.images.filter((img) => normalizeString(img) !== ''),
+            ...uploadedUrls,
+          ],
         }));
         console.log('[Vendor] Updated newProduct.images after upload:', uploadedUrls);
-        
+
         // Clear selected files and previews
         setSelectedFiles(null);
         setPreviewUrls([]);
-        
+
         // Reset file input
         const fileInput = document.getElementById('image-upload') as HTMLInputElement;
         if (fileInput) fileInput.value = '';
-        
-      toast({
-        title: "Success",
-          description: "Images uploaded successfully",
-          variant: "default",
-        className: "bg-green-500 text-white",
-      });
+
+        toast({
+          title: 'Success',
+          description: 'Images uploaded successfully',
+          variant: 'default',
+          className: 'bg-green-500 text-white',
+        });
       } else {
         throw new Error(response.message || 'Failed to upload images');
       }
