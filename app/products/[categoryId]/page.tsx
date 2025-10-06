@@ -183,9 +183,11 @@ export default function CategoryProducts() {
       console.log('[Vendor] Upload response (/upload/product):', response);
 
       if (response.success && Array.isArray(response.data)) {
-        // Prefer fullUrl; fallback to url; filter invalid
+        // Prefer fullUrl; fallback to url, Location, imageData; filter invalid
         const uploadedUrls = response.data
-          .map((file: { fullUrl?: string | null; url?: string | null }) => file?.fullUrl || file?.url || '')
+          .map((file: { fullUrl?: string | null; url?: string | null; Location?: string | null; imageData?: string | null }) => {
+            return file?.fullUrl || file?.url || file?.Location || file?.imageData || '';
+          })
           .map((u: string) => (typeof u === 'string' ? u.trim() : ''))
           .filter((u: string) => u !== '' && !u.includes('/uploads/undefined'));
 
