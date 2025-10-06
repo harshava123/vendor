@@ -183,6 +183,13 @@ export default function CategoryProducts() {
       console.log('[Vendor] Upload response (/upload/product):', response);
 
       if (response.success && Array.isArray(response.data)) {
+        // If backend included an error in any item, surface it clearly
+        const itemWithError = response.data.find((it: Record<string, unknown>) => typeof (it as { error?: unknown }).error === 'string' && ((it as { error?: string }).error || '').trim() !== '');
+        if (itemWithError) {
+          const msg = (itemWithError as { error?: string }).error as string;
+          console.warn('[Vendor] Upload item reported error:', msg, 'Raw item:', itemWithError);
+          throw new Error(msg || 'Upload failed on server');
+        }
         // Prefer known keys; then heuristically pick the first string URL-like field
         const pickUrl = (item: Record<string, unknown>): string => {
           const candidates: (unknown)[] = [
